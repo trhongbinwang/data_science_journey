@@ -6,3 +6,5 @@ Things in this project.
 3. minimal re-implemenation of interesting projects. 
 
 The principle is to simplify and re-create the working demo. 
+all of code are modular, in the form of function or a part of pipeline. 
+
