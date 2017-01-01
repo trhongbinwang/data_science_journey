@@ -4,10 +4,16 @@ Created on Wed Dec  7 15:55:37 2016
 
 pandas summary
 
+http://pandas.pydata.org/pandas-docs/stable/basics.html
+
+can search this page to find howto
+
+0 or ‘index’ for row-wise, 1 or ‘columns’ for column-wise
 
 """
 import pickle
 import pandas as pd
+import numpy as np
 
 # used in notebook
 import matplotlib.pyplot as plt
@@ -69,7 +75,7 @@ df = df.dropna(subset = ['name'])
 pd.values
 # another way to iterate pd row by row
     for row in df.itertuples(index=False):
-        print(row) # row is a list
+        print(row) # row is a namedtuple
 # group data using column
     grouped = df.groupby('source')
     for name, group in grouped:
@@ -137,6 +143,138 @@ review_columns = ['abv','review_overall','review_appearance',
 gr[review_columns].agg('mean')
 
 gr['review_aroma'].agg([np.mean, np.std, 'count']) # multiple aggregation
+
+
+#
+#Attributes and the raw ndarray(s)
+# shape; columns and index
+df.columns = [x.lower() for x in df.columns]
+
+# Flexible binary operations
+row = df.ix[1]
+column = df['two']
+df.sub(row, axis='columns')
+
+df + df2
+df.add(df2, fill_value=0)
+df.gt(df2)
+
+# Descriptive statistics; DataFrame: “index” (axis=0, default), “columns” (axis=1)
+df.mean(0)
+df.sum(0, skipna=False)
+# normalize column
+ts_stand = (df - df.mean()) / df.std()
+# normalize each row
+xs_stand = df.sub(df.mean(1), axis=0).div(df.std(1), axis=0)
+
+# index of min and max
+df1.idxmin(axis=0)
+df1.idxmax(axis=1)
+
+# Value counts (histogramming)
+s = pd.Series(np.random.randint(0, 7, size=50))
+s.value_counts()
+
+# Row or Column-wise Function Application
+df.apply(np.mean)
+df.apply(np.mean, axis=1)
+# can pass additional parameters to function
+
+# Applying elementwise Python functions
+# applymap() for df; map() for Series (column); func takes a single value and output a single value
+f = lambda x: len(str(x))
+df4['one'].map(f)
+df4.applymap(f)
+
+# iteration
+for i in object:
+# Series, value
+# dataframe, column name
+for col in df:
+    print(col)
+# itertuples is a lot faster than iterrows
+# itertuples return each row as a namedtuple
+# a namedtuple is as row = (Index=0, a=1, b='a'). can be access as: row.a
+    
+# .dt  for Series
+s = pd.Series(pd.date_range('20130101 09:10:12', periods=4))
+s.dt.day
+s.dt.hour
+s.dt.second
+s[s.dt.day==2]
+s.dt.strftime('%Y/%m/%d') # convert datatime to string
+
+# pd.date_range to generate data range
+
+# Vectorized string methods - Series; exclude missing/NA values automatically
+s = pd.Series(['A', 'B', 'C', 'Aaba', 'Baca', np.nan, 'CABA', 'dog', 'cat'])
+s.str.lower()
+# clean up the columns; chaining because all method return a Series
+df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
+
+# Sorting
+#sort by index
+unsorted_df.sort_index()
+# sort by value
+df1 = pd.DataFrame({'one':[2,1,1,1],'two':[1,3,2,4],'three':[5,4,3,2]})
+df1[['one', 'two', 'three']].sort_values(by=['one','two'])
+
+# smallest / largest values
+s = pd.Series(np.random.permutation(10))
+s.nsmallest(3)
+df = pd.DataFrame({'a': [-2, -1, 1, 10, 8, 11, -1],
+                   'b': list('abdceff')})
+df.nlargest(3, 'a')
+# series.nlargest
+s = pd.Series(np.randam.rand(100))
+s.largest(10)
+
+# dtypes of each columns
+dft.dtypes
+
+#astype
+dft = pd.DataFrame({'a': [1,2,3], 'b': [4,5,6], 'c': [7, 8, 9]})
+dft[['a','b']] = dft[['a','b']].astype(np.uint8)
+
+#pd.to_datetime()
+#to_numeric() 
+df.apply(pd.to_datetime)
+
+
+# Method chaining; since each method return a df. 
+def read(fp):
+    df = (pd.read_csv(fp)
+            .rename(columns=str.lower)
+            .drop('unnamed: 36', axis=1)
+            .pipe(extract_city_name)
+            .pipe(time_to_datetime, ['dep_time', 'arr_time', 'crs_arr_time', 'crs_dep_time'])
+            .assign(fl_date=lambda x: pd.to_datetime(x['fl_date']),
+                    dest=lambda x: pd.Categorical(x['dest']),
+                    origin=lambda x: pd.Categorical(x['origin']),
+                    tail_num=lambda x: pd.Categorical(x['tail_num']),
+                    unique_carrier=lambda x: pd.Categorical(x['unique_carrier']),
+                    cancellation_code=lambda x: pd.Categorical(x['cancellation_code'])))
+    return df
+# pipe your own function
+>>> (df.pipe(h)
+...    .pipe(g, arg1=a)
+...    .pipe(f, arg2=b, arg3=c)
+... )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

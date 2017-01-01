@@ -2,7 +2,9 @@
 """
 Created on Fri Dec  2 14:41:34 2016
 
-keras time series prediction
+keras time series prediction with window past
+
+tuning performance still an unsolved issue
 
 @author: hongbin
 """
@@ -20,7 +22,7 @@ from sklearn.metrics import mean_squared_error
 numpy.random.seed(7)
 
 # hyperparameters
-look_back = 1
+look_back = 10 # window size of past
 
 
 def create_dataset(dataset, look_back=1):
@@ -83,8 +85,8 @@ def model():
     Input is in keras/engine/topology.py
     '''
     # Input is use to create a keras tensor. check how keras use with tf
-    x = Input(shape=(look_back, 1)) # (94, 1, 1) shape is the training set's shape
-    l = LSTM(4)(x)
+    x = Input(shape=(1,look_back)) # (94, 1, 1) shape is the training set's shape
+    l = LSTM(64)(x)
     d = Dense(1)(l)
     model = Model(input=x, output=d)
     model.compile(loss='mean_squared_error', optimizer='adam')
@@ -98,12 +100,6 @@ def predict(model, trainX, testX):
     testPredict = model.predict(testX)
     return [trainPredict, testPredict]
     
-    
-## create and fit the LSTM network
-#model = Sequential()
-#model.add(LSTM(4, input_dim=look_back))
-#model.add(Dense(1))
-#model.compile(loss='mean_squared_error', optimizer='adam')
     
 def invert_predict(trainPredict, trainY, testPredict, testY):
     
@@ -131,7 +127,7 @@ def display(dataset, trainPredict, testPredict):
     testPredictPlot[:, :] = numpy.nan
     testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset)-1, :] = testPredict
     # plot baseline and predictions
-    plt.plot(scaler.inverse_transform(dataset))
+    plt.plot(dataset)
     plt.plot(trainPredictPlot)
     plt.plot(testPredictPlot)
     plt.show()
