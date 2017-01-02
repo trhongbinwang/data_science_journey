@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+# hyperparameters
 # Configuration
 batch_size = 20
 # Dimension of the embedding vector. Two too small to get
@@ -13,50 +14,75 @@ batch_size = 20
 embedding_size = 2
 num_sampled = 15    # Number of negative examples to sample.
 
-# Sample sentences
-sentences = ["the quick brown fox jumped over the lazy dog",
-            "I love cats and dogs",
-            "we all love cats and dogs",
-            "cats and dogs are great",
-            "sung likes cats",
-            "she loves dogs",
-            "cats can be very independent",
-            "cats are great companions when they want to be",
-            "cats are playful",
-            "cats are natural hunters",
-            "It's raining cats and dogs",
-            "dogs and cats love sung"]
 
-# sentences to words and count
-words = " ".join(sentences).split()
-count = collections.Counter(words).most_common()
-print ("Word count", count[:5])
+def load_data():
+    # Sample sentences
+    sentences = ["the quick brown fox jumped over the lazy dog",
+                "I love cats and dogs",
+                "we all love cats and dogs",
+                "cats and dogs are great",
+                "sung likes cats",
+                "she loves dogs",
+                "cats can be very independent",
+                "cats are great companions when they want to be",
+                "cats are playful",
+                "cats are natural hunters",
+                "It's raining cats and dogs",
+                "dogs and cats love sung"]
+    return sentences
 
-# Build dictionaries
-rdic = [i[0] for i in count] #reverse dic, idx -> word
-dic = {w: i for i, w in enumerate(rdic)} #dic, word -> id
-voc_size = len(dic)
+def pre_processing(sentences):
+    ''' '''
+    # sentences to words and count
+    words = " ".join(sentences).split()
+    count = collections.Counter(words).most_common()
+    print ("Word count", count[:5])
+    
+    # Build dictionaries
+    rdic = [i[0] for i in count] #reverse dic, idx -> word
+    dic = {w: i for i, w in enumerate(rdic)} #dic, word -> id
+    voc_size = len(dic)
+    
+    # Make indexed word data
+    data = [dic[word] for word in words]
+    print('Sample data', data[:10], [rdic[t] for t in data[:10]])
+    return [data, rdic, dic, voc_size]    
 
-# Make indexed word data
-data = [dic[word] for word in words]
-print('Sample data', data[:10], [rdic[t] for t in data[:10]])
+def make_cbow_pairs(data):
+    ''' (context, target) pairs '''
+    # window size 1 for simplicity
+    # use context to predict the middle one - cbow algorithm
+    # ([the, brown], quick), ([quick, fox], brown), ([brown, jumped], fox), ...
+    cbow_pairs = [];
+    for i in range(1, len(data)-1) :
+        cbow_pairs.append([[data[i-1], data[i+1]], data[i]]);
+    print('Context pairs', cbow_pairs[:10])
+    return cbow_pairs
 
-# Let's make a training data for window size 1 for simplicity
-# ([the, brown], quick), ([quick, fox], brown), ([brown, jumped], fox), ...
-cbow_pairs = [];
-for i in range(1, len(data)-1) :
-    cbow_pairs.append([[data[i-1], data[i+1]], data[i]]);
-print('Context pairs', cbow_pairs[:10])
+def make_skip_gram_pairs(cbow_pairs):
+    # skip-gram pairs invert cbow pairs to use central word to predict context
+    # (quick, the), (quick, brown), (brown, quick), (brown, fox), ...
+    skip_gram_pairs = [];
+    for c in cbow_pairs:
+        skip_gram_pairs.append([c[1], c[0][0]])
+        skip_gram_pairs.append([c[1], c[0][1]])
+    print('skip-gram pairs', skip_gram_pairs[:5])
+    return skip_gram_pairs    
+    
+def create_dataset():
+    '''steps to create final training data '''
+    # load text data
+    sentences = load_data()
+    # represent text into indexed (word) sequence
+    [data, rdic, dic, voc_size] = pre_processing(sentences)
+    # cbow_pairs (context, target)
+    cbow_pairs = make_cbow_pairs(data)
+    # skip_gram_pairs (target, context)
+    skip_gram_pairs = make_skip_gram_pairs(cbow_pairs)
+    
+    return [skip_gram_pairs, rdic, voc_size]
 
-# Let's make skip-gram pairs
-# (quick, the), (quick, brown), (brown, quick), (brown, fox), ...
-skip_gram_pairs = [];
-for c in cbow_pairs:
-    skip_gram_pairs.append([c[1], c[0][0]])
-    skip_gram_pairs.append([c[1], c[0][1]])
-print('skip-gram pairs', skip_gram_pairs[:5])
-
-def generate_batch(size):
+def generate_batch(skip_gram_pairs, size):
     assert size < len(skip_gram_pairs)
     x_data=[]
     y_data = []
@@ -66,57 +92,98 @@ def generate_batch(size):
         y_data.append([skip_gram_pairs[i][1]])  # n, 1 dim
     return x_data, y_data
 
-# generate_batch test
-print ('Batches (x, y)', generate_batch(3))
+def inputs_placeholder():
+    # Input data
+    train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+    # need to shape [batch_size, 1] for nn.nce_loss
+    train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    return [train_inputs, train_labels]
 
-# Input data
-train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-# need to shape [batch_size, 1] for nn.nce_loss
-train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
-# Ops and variables pinned to the CPU because of missing GPU implementation
-with tf.device('/cpu:0'):
-    # Look up embeddings for inputs.
-    embeddings = tf.Variable(
-        tf.random_uniform([voc_size, embedding_size], -1.0, 1.0))
-    embed = tf.nn.embedding_lookup(embeddings, train_inputs) # lookup table
+def model(voc_size, train_inputs, train_labels):
+    # Ops and variables pinned to the CPU because of missing GPU implementation
+    with tf.device('/cpu:0'):
+        # Look up embeddings for inputs.
+        embeddings = tf.Variable(
+            tf.random_uniform([voc_size, embedding_size], -1.0, 1.0))
+        embed = tf.nn.embedding_lookup(embeddings, train_inputs) # lookup table
+    
+    # Construct the variables for the NCE loss
+    nce_weights = tf.Variable(
+        tf.random_uniform([voc_size, embedding_size],-1.0, 1.0))
+    nce_biases = tf.Variable(tf.zeros([voc_size]))
+    
+    # Compute the average NCE loss for the batch.
+    # This does the magic:
+    #   tf.nn.nce_loss(weights, biases, inputs, labels, num_sampled, num_classes ...)
+    # It automatically draws negative samples when we evaluate the loss.
+    loss = tf.reduce_mean(
+      tf.nn.nce_loss(nce_weights, nce_biases, embed, train_labels,
+                     num_sampled, voc_size))
+    
+    # Use the adam optimizer
+    train_op = tf.train.AdamOptimizer(1e-1).minimize(loss)
+    return [loss, train_op, embeddings]
 
-# Construct the variables for the NCE loss
-nce_weights = tf.Variable(
-    tf.random_uniform([voc_size, embedding_size],-1.0, 1.0))
-nce_biases = tf.Variable(tf.zeros([voc_size]))
+def train(skip_gram_pairs, train_inputs, train_labels, loss, train_op, embeddings):
+    '''
+    Inputs:
+    data: skip_gram_pairs
+    Graph: (inputs)train_inputs, train_labels; (outputs) loss, train_op, embeddings
+    Outputs: 
+    trained embedding vectors
+    '''
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # Initializing all variables
+        tf.global_variables_initializer().run()
+    
+        for step in range(100):
+            # generate the data here
+            batch_inputs, batch_labels = generate_batch(skip_gram_pairs, batch_size)
+            _, loss_val = sess.run([train_op, loss],
+                    feed_dict={train_inputs: batch_inputs, train_labels: batch_labels})
+            if step % 10 == 0:
+              print("Loss at ", step, loss_val) # Report the loss
+    
+        # Final embeddings are ready for you to use. Need to normalize for practical use
+        trained_embeddings = embeddings.eval()
+        return trained_embeddings
 
-# Compute the average NCE loss for the batch.
-# This does the magic:
-#   tf.nn.nce_loss(weights, biases, inputs, labels, num_sampled, num_classes ...)
-# It automatically draws negative samples when we evaluate the loss.
-loss = tf.reduce_mean(
-  tf.nn.nce_loss(nce_weights, nce_biases, embed, train_labels,
-                 num_sampled, voc_size))
+def display(trained_embeddings, rdic):
+    # Show word2vec if dim is 2
+    if trained_embeddings.shape[1] == 2:
+        labels = rdic[:10] # Show top 10 words
+        for i, label in enumerate(labels):
+            x, y = trained_embeddings[i,:]
+            plt.scatter(x, y)
+            plt.annotate(label, xy=(x, y), xytext=(5, 2),
+                textcoords='offset points', ha='right', va='bottom')
+        plt.savefig("word2vec.png")
 
-# Use the adam optimizer
-train_op = tf.train.AdamOptimizer(1e-1).minimize(loss)
+def main():
+    ''' '''
+    # create dataset
+    [skip_gram_pairs, rdic, voc_size] = create_dataset()
+    # define inputs
+    [train_inputs, train_labels] = inputs_placeholder()
+    # model
+    [loss, train_op, embeddings] = model(voc_size, train_inputs, train_labels)
+    # training
+    trained_embeddings = train(skip_gram_pairs, train_inputs, train_labels, loss, train_op, embeddings)
+    # display
+    display(trained_embeddings, rdic)
+    
+    
 
-# Launch the graph in a session
-with tf.Session() as sess:
-    # Initializing all variables
-    tf.initialize_all_variables().run()
+def debug():
+    ''' '''
+    pass
+    
+if __name__ == '__main__':
+    ''' '''
+    main()
 
-    for step in range(100):
-        batch_inputs, batch_labels = generate_batch(batch_size)
-        _, loss_val = sess.run([train_op, loss],
-                feed_dict={train_inputs: batch_inputs, train_labels: batch_labels})
-        if step % 10 == 0:
-          print("Loss at ", step, loss_val) # Report the loss
 
-    # Final embeddings are ready for you to use. Need to normalize for practical use
-    trained_embeddings = embeddings.eval()
-
-# Show word2vec if dim is 2
-if trained_embeddings.shape[1] == 2:
-    labels = rdic[:10] # Show top 10 words
-    for i, label in enumerate(labels):
-        x, y = trained_embeddings[i,:]
-        plt.scatter(x, y)
-        plt.annotate(label, xy=(x, y), xytext=(5, 2),
-            textcoords='offset points', ha='right', va='bottom')
-    plt.savefig("word2vec.png")
+    
+    
+    

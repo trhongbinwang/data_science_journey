@@ -31,7 +31,7 @@ def init_weights(shape):
     return tf.Variable(tf.random_normal(shape, stddev=0.01))
 
 
-def model(X, W, B, lstm_size):
+def lstm(X, W, B, lstm_size):
     # X, input shape: (batch_size, time_step_size, input_vec_size)
     XT = tf.transpose(X, [1, 0, 2])  # permute time_step_size and batch_size
     # XT shape: (time_step_size, batch_size, input_vec_size)
@@ -50,37 +50,72 @@ def model(X, W, B, lstm_size):
     # Get the last output
     return tf.matmul(outputs[-1], W) + B, lstm.state_size # State size to initialize the stat
 
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
-trX = trX.reshape(-1, 28, 28)
-teX = teX.reshape(-1, 28, 28)
+def pre_processing(trX, teX):
+    '''reshape'''
+    trX = trX.reshape(-1, 28, 28)
+    teX = teX.reshape(-1, 28, 28)
+    return [trX, teX]
 
-X = tf.placeholder("float", [None, 28, 28])
-Y = tf.placeholder("float", [None, 10])
 
-# get lstm_size and output 10 labels
-W = init_weights([lstm_size, 10])
-B = init_weights([10])
+def load_data():
+    
+    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+    trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
+    [trX, teX] = pre_processing(trX, teX)
+    return [trX, trY, teX, teY]
 
-py_x, state_size = model(X, W, B, lstm_size)
+def inputs_placeholder():
+    
+    X = tf.placeholder("float", [None, 28, 28])
+    Y = tf.placeholder("float", [None, 10])
+    return [X, Y]
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
-train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
-predict_op = tf.argmax(py_x, 1)
+def model(X, Y):
+    '''
+    Inputs: X, Y
+    Outputs: train_op, predict_op
+    '''
+    # get lstm_size and output 10 labels
+    W = init_weights([lstm_size, 10])
+    B = init_weights([10])
+    
+    py_x, state_size = lstm(X, W, B, lstm_size)
+    
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
+    train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
+    predict_op = tf.argmax(py_x, 1)
+    return [train_op, predict_op]
 
-# Launch the graph in a session
-with tf.Session() as sess:
-    # you need to initialize all variables
-    tf.initialize_all_variables().run()
+def train(trX, trY, teX, teY, X, Y, train_op, predict_op):
+    ''' '''
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+    
+        for i in range(100):
+            for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX)+1, batch_size)):
+                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
+    
+            test_indices = np.arange(len(teX))  # Get A Test Batch
+            np.random.shuffle(test_indices)
+            test_indices = test_indices[0:test_size]
+    
+            print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
+                             sess.run(predict_op, feed_dict={X: teX[test_indices],
+                                                             Y: teY[test_indices]})))
 
-    for i in range(100):
-        for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX)+1, batch_size)):
-            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    trX, trY, teX, teY = load_data()
+    # inputs
+    [X, Y] = inputs_placeholder()
+    # model
+    [train_op, predict_op] = model(X, Y)
+    # train
+    train(trX, trY, teX, teY, X, Y, train_op, predict_op)
+    
+    
+    
 
-        test_indices = np.arange(len(teX))  # Get A Test Batch
-        np.random.shuffle(test_indices)
-        test_indices = test_indices[0:test_size]
-
-        print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
-                         sess.run(predict_op, feed_dict={X: teX[test_indices],
-                                                         Y: teY[test_indices]})))

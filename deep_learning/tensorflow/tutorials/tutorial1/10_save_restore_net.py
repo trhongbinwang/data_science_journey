@@ -1,5 +1,12 @@
 #!/usr/bin/env python
+'''
+how to save and restore
+1. in model(), after define graph, define saver
+2. in train(), load ckpt at beginning.
+3. in train(), inside the training loop, call saver. 
 
+
+'''
 import tensorflow as tf
 import numpy as np
 import input_data
@@ -9,11 +16,17 @@ import os
 # To see how it works, please stop this program during training and resart.
 # This network is the same as 3_net.py
 
+# setup
+ckpt_dir = "./ckpt_dir"
+if not os.path.exists(ckpt_dir):
+    os.makedirs(ckpt_dir)
+
+
 def init_weights(shape):
     return tf.Variable(tf.random_normal(shape, stddev=0.01))
 
 
-def model(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden): # this network is the same as the previous one except with an extra hidden layer + dropout
+def mlp_dropout(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden): # this network is the same as the previous one except with an extra hidden layer + dropout
     X = tf.nn.dropout(X, p_keep_input)
     h = tf.nn.relu(tf.matmul(X, w_h))
 
@@ -24,59 +37,97 @@ def model(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden): # this network is the
 
     return tf.matmul(h2, w_o)
 
-
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
-
-X = tf.placeholder("float", [None, 784])
-Y = tf.placeholder("float", [None, 10])
-
-w_h = init_weights([784, 625])
-w_h2 = init_weights([625, 625])
-w_o = init_weights([625, 10])
-
-p_keep_input = tf.placeholder("float")
-p_keep_hidden = tf.placeholder("float")
-py_x = model(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden)
-
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
-train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
-predict_op = tf.argmax(py_x, 1)
+def load_data():
+    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+    trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
+    return [trX, trY, teX, teY]
+    
+def inputs_placeholder():
+    ''' '''
+    X = tf.placeholder("float", [None, 784])
+    Y = tf.placeholder("float", [None, 10])
+    p_keep_input = tf.placeholder("float")
+    p_keep_hidden = tf.placeholder("float")
+    return [X, Y, p_keep_input, p_keep_hidden]
 
 
-ckpt_dir = "./ckpt_dir"
-if not os.path.exists(ckpt_dir):
-    os.makedirs(ckpt_dir)
+def model(X, Y, p_keep_input, p_keep_hidden): 
+    '''
+    
+    '''
+    w_h = init_weights([784, 625])
+    w_h2 = init_weights([625, 625])
+    w_o = init_weights([625, 10])
+    
+    py_x = mlp_dropout(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden)
+    
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
+    train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
+    predict_op = tf.argmax(py_x, 1)
+    
+    
+    
+    global_step = tf.Variable(0, name='global_step', trainable=False)
+    
+    # Call this after declaring all tf.Variables.
+    saver = tf.train.Saver()
+    
+    # This variable won't be stored, since it is declared after tf.train.Saver()
+    non_storable_variable = tf.Variable(777)
+    return [train_op, predict_op, global_step, saver]
 
-global_step = tf.Variable(0, name='global_step', trainable=False)
+def train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op, global_step, saver): 
+    '''
+    data: trX, trY, teX, teY
+    graph: (inputs) X, Y, p_keep_input, p_keep_hidden; (outputs) train_op, acc_op, global_step, saver
+    
+    '''
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+        
+        # load chpt
+        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
+        if ckpt and ckpt.model_checkpoint_path:
+            print(ckpt.model_checkpoint_path)
+            saver.restore(sess, ckpt.model_checkpoint_path) # restore all variables
+    
+        start = global_step.eval() # get last global_step
+        print("Start from:", start)
+    
+        for i in range(start, 100):
+            for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
+                                              p_keep_input: 0.8, p_keep_hidden: 0.5})
+            
+            # call saver.save in training loop
+            global_step.assign(i).eval() # set and update(eval) global_step with index, i
+            saver.save(sess, ckpt_dir + "/model.ckpt", global_step=global_step)
+            
+            print(i, np.mean(np.argmax(teY, axis=1) ==
+                             sess.run(predict_op, feed_dict={X: teX, Y: teY,
+                                                             p_keep_input: 1.0,
+                                                             p_keep_hidden: 1.0})))
 
-# Call this after declaring all tf.Variables.
-saver = tf.train.Saver()
-
-# This variable won't be stored, since it is declared after tf.train.Saver()
-non_storable_variable = tf.Variable(777)
-
-# Launch the graph in a session
-with tf.Session() as sess:
-    # you need to initialize all variables
-    tf.initialize_all_variables().run()
-
-    ckpt = tf.train.get_checkpoint_state(ckpt_dir)
-    if ckpt and ckpt.model_checkpoint_path:
-        print(ckpt.model_checkpoint_path)
-        saver.restore(sess, ckpt.model_checkpoint_path) # restore all variables
-
-    start = global_step.eval() # get last global_step
-    print("Start from:", start)
-
-    for i in range(start, 100):
-        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
-            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
-                                          p_keep_input: 0.8, p_keep_hidden: 0.5})
-
-        global_step.assign(i).eval() # set and update(eval) global_step with index, i
-        saver.save(sess, ckpt_dir + "/model.ckpt", global_step=global_step)
-        print(i, np.mean(np.argmax(teY, axis=1) ==
-                         sess.run(predict_op, feed_dict={X: teX, Y: teY,
-                                                         p_keep_input: 1.0,
-                                                         p_keep_hidden: 1.0})))
+if __name__ == '__main__':
+    ''' '''
+    # load_data
+    [trX, trY, teX, teY] = load_data()
+    # inputs
+    [X, Y, p_keep_input, p_keep_hidden] = inputs_placeholder()
+    # model
+    [train_op, predict_op, global_step, saver] = model(X, Y, p_keep_input, p_keep_hidden)
+    
+    # train
+    train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op, global_step, saver)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
