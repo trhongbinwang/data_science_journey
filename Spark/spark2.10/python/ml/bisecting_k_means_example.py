@@ -17,6 +17,20 @@
 
 from __future__ import print_function
 
+########## enviroment setup ################
+import os
+import sys
+
+# set enviroment and path to run pyspark
+spark_home = os.environ.get('SPARK_HOME', None)
+print(spark_home)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.4-src.zip')) ## may need to adjust on your system depending on which Spark version you're using and where you installed it.
+##############################
+
+
 # $example on$
 from pyspark.ml.clustering import BisectingKMeans
 # $example off$
@@ -28,29 +42,45 @@ Run with:
   bin/spark-submit examples/src/main/python/ml/bisecting_k_means_example.py
 """
 
-if __name__ == "__main__":
-    spark = SparkSession\
-        .builder\
-        .appName("BisectingKMeansExample")\
-        .getOrCreate()
-
-    # $example on$
+def load_data():
     # Loads data.
-    dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
+    dataset = spark.read.format("libsvm").load("../../data/mllib/sample_kmeans_data.txt")
+    return dataset
 
+def train_model(dataset):
     # Trains a bisecting k-means model.
     bkm = BisectingKMeans().setK(2).setSeed(1)
     model = bkm.fit(dataset)
+    return model
 
+def evaluate(model):
     # Evaluate clustering.
     cost = model.computeCost(dataset)
     print("Within Set Sum of Squared Errors = " + str(cost))
 
+def display(model):
     # Shows the result.
     print("Cluster Centers: ")
     centers = model.clusterCenters()
     for center in centers:
         print(center)
-    # $example off$
+    
 
+if __name__ == "__main__":
+    # initialize spark session
+    spark = SparkSession\
+        .builder\
+        .appName("BisectingKMeansExample")\
+        .getOrCreate()
+
+    # load data
+    dataset = load_data()
+    # training model
+    model = train_model(dataset)
+    # evaluate
+    evaluate(model)
+    # display
+    display(model)
+
+    # stop
     spark.stop()

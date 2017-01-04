@@ -38,7 +38,20 @@
 """
 from __future__ import print_function
 
+########## enviroment setup ################
+import os
 import sys
+
+# set enviroment and path to run pyspark
+spark_home = os.environ.get('SPARK_HOME', None)
+print(spark_home)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.4-src.zip')) ## may need to adjust on your system depending on which Spark version you're using and where you installed it.
+##############################
+
+#import sys
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode

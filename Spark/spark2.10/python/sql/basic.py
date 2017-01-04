@@ -17,6 +17,19 @@
 
 from __future__ import print_function
 
+########## enviroment setup ################
+import os
+import sys
+
+# set enviroment and path to run pyspark
+spark_home = os.environ.get('SPARK_HOME', None)
+print(spark_home)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.4-src.zip')) ## may need to adjust on your system depending on which Spark version you're using and where you installed it.
+##############################
+
 # $example on:init_session$
 from pyspark.sql import SparkSession
 # $example off:init_session$
@@ -40,7 +53,7 @@ Run with:
 def basic_df_example(spark):
     # $example on:create_df$
     # spark is an existing SparkSession
-    df = spark.read.json("examples/src/main/resources/people.json")
+    df = spark.read.json("../../resources/people.json")
     # Displays the content of the DataFrame to stdout
     df.show()
     # +----+-------+
@@ -145,7 +158,7 @@ def schema_inference_example(spark):
     sc = spark.sparkContext
 
     # Load a text file and convert each line to a Row.
-    lines = sc.textFile("examples/src/main/resources/people.txt")
+    lines = sc.textFile("../../resources/people.txt")
     parts = lines.map(lambda l: l.split(","))
     people = parts.map(lambda p: Row(name=p[0], age=int(p[1])))
 
@@ -170,7 +183,7 @@ def programmatic_schema_example(spark):
     sc = spark.sparkContext
 
     # Load a text file and convert each line to a Row.
-    lines = sc.textFile("examples/src/main/resources/people.txt")
+    lines = sc.textFile("../../resources/people.txt")
     parts = lines.map(lambda l: l.split(","))
     # Each line is converted to a tuple.
     people = parts.map(lambda p: (p[0], p[1].strip()))

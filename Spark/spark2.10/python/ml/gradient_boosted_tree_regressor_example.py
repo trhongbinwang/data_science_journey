@@ -20,6 +20,19 @@ Gradient Boosted Tree Regressor Example.
 """
 from __future__ import print_function
 
+########## enviroment setup ################
+import os
+import sys
+
+# set enviroment and path to run pyspark
+spark_home = os.environ.get('SPARK_HOME', None)
+print(spark_home)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.4-src.zip')) ## may need to adjust on your system depending on which Spark version you're using and where you installed it.
+##############################
+
 # $example on$
 from pyspark.ml import Pipeline
 from pyspark.ml.regression import GBTRegressor
@@ -28,33 +41,28 @@ from pyspark.ml.evaluation import RegressionEvaluator
 # $example off$
 from pyspark.sql import SparkSession
 
-if __name__ == "__main__":
-    spark = SparkSession\
-        .builder\
-        .appName("GradientBoostedTreeRegressorExample")\
-        .getOrCreate()
 
-    # $example on$
+def load_data():
     # Load and parse the data file, converting it to a DataFrame.
-    data = spark.read.format("libsvm").load("data/mllib/sample_libsvm_data.txt")
-
+    data = spark.read.format("libsvm").load("../../data/mllib/sample_libsvm_data.txt")
+    # Split the data into training and test sets (30% held out for testing)
+    (trainingData, testData) = data.randomSplit([0.7, 0.3])
+    return (data, trainingData, testData)
+    
+def make_pipeline(data):
     # Automatically identify categorical features, and index them.
     # Set maxCategories so features with > 4 distinct values are treated as continuous.
     featureIndexer =\
         VectorIndexer(inputCol="features", outputCol="indexedFeatures", maxCategories=4).fit(data)
-
-    # Split the data into training and test sets (30% held out for testing)
-    (trainingData, testData) = data.randomSplit([0.7, 0.3])
 
     # Train a GBT model.
     gbt = GBTRegressor(featuresCol="indexedFeatures", maxIter=10)
 
     # Chain indexer and GBT in a Pipeline
     pipeline = Pipeline(stages=[featureIndexer, gbt])
-
-    # Train model.  This also runs the indexer.
-    model = pipeline.fit(trainingData)
-
+    return pipeline
+    
+def predict_display(model, testData):
     # Make predictions.
     predictions = model.transform(testData)
 
@@ -69,6 +77,29 @@ if __name__ == "__main__":
 
     gbtModel = model.stages[1]
     print(gbtModel)  # summary only
-    # $example off$
 
+
+
+if __name__ == "__main__":
+    # initialize spark session
+    spark = SparkSession\
+        .builder\
+        .appName("GradientBoostedTreeRegressorExample")\
+        .getOrCreate()
+
+    # load data
+    (data, trainingData, testData) = load_data()
+    # make pipeline
+    pipeline = make_pipeline(data)
+    
+    # Train model.  This also runs the indexer.
+    model = pipeline.fit(trainingData)
+    # predict and display
+    predict_display(model, testData)
+    
+    # stop
     spark.stop()
+    
+    
+    
+    

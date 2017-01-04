@@ -17,25 +17,49 @@
 
 from __future__ import print_function
 
+########## enviroment setup ################
+import os
+import sys
+
+# set enviroment and path to run pyspark
+spark_home = os.environ.get('SPARK_HOME', None)
+print(spark_home)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.4-src.zip')) ## may need to adjust on your system depending on which Spark version you're using and where you installed it.
+##############################
+
 # $example on$
 from pyspark.ml.feature import Word2Vec
 # $example off$
 from pyspark.sql import SparkSession
 
-if __name__ == "__main__":
-    spark = SparkSession\
-        .builder\
-        .appName("Word2VecExample")\
-        .getOrCreate()
+#def create_data():
+#    # Input data: Each row is a bag of words from a sentence or document.
+#    documentDF = spark.createDataFrame([
+#        ("Hi I heard about Spark".split(" "), ),
+#        ("I wish Java could use case classes".split(" "), ),
+#        ("Logistic regression models are neat".split(" "), )
+#    ], ["text"])
+#    return documentDF
 
-    # $example on$
+def create_data():
     # Input data: Each row is a bag of words from a sentence or document.
+    # one element tuple (1, ). trailing comma
+    sent = ("Hi I heard about Spark".split(" "),)
+    print(sent)
+    print(type(sent)) # tuple
     documentDF = spark.createDataFrame([
-        ("Hi I heard about Spark".split(" "), ),
-        ("I wish Java could use case classes".split(" "), ),
-        ("Logistic regression models are neat".split(" "), )
+        ("Hi I heard about Spark".split(" "),),
+        ("I wish Java could use case classes".split(" "),),
+        ("Logistic regression models are neat".split(" "),)
     ], ["text"])
+    return documentDF
 
+    
+def pre_processing(documentDF):
+    ''' word2vec '''
     # Learn a mapping from words to Vectors.
     word2Vec = Word2Vec(vectorSize=3, minCount=0, inputCol="text", outputCol="result")
     model = word2Vec.fit(documentDF)
@@ -44,6 +68,18 @@ if __name__ == "__main__":
     for row in result.collect():
         text, vector = row
         print("Text: [%s] => \nVector: %s\n" % (", ".join(text), str(vector)))
-    # $example off$
+
+
+if __name__ == "__main__":
+    
+    spark = SparkSession\
+        .builder\
+        .appName("Word2VecExample")\
+        .getOrCreate()
+
+    # create data
+    documentDF = create_data()
+    # word2vec
+    pre_processing(documentDF)
 
     spark.stop()

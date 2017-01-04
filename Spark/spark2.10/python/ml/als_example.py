@@ -45,7 +45,8 @@ from pyspark.sql import Row
 def load_data(spark):
     '''' read df from RDD '''
     # windows change from \ to /
-    fileName = 'D:/code/spark2.10/data/mllib/als/sample_movielens_ratings.txt'
+#    fileName = '/home/hongbin/git/data_science_journey/Spark/spark2.10/data/mllib/als/sample_movielens_ratings.txt'
+    fileName = '../../data/mllib/als/sample_movielens_ratings.txt'
     lines = spark.read.text(fileName).rdd
     parts = lines.map(lambda row: row.value.split("::"))
     ratingsRDD = parts.map(lambda p: Row(userId=int(p[0]), movieId=int(p[1]),

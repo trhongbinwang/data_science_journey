@@ -17,24 +17,35 @@
 
 from __future__ import print_function
 
+########## enviroment setup ################
+import os
+import sys
+
+# set enviroment and path to run pyspark
+spark_home = os.environ.get('SPARK_HOME', None)
+print(spark_home)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.4-src.zip')) ## may need to adjust on your system depending on which Spark version you're using and where you installed it.
+##############################
+
+
 from pyspark.sql import SparkSession
 # $example on$
 from pyspark.ml.feature import CountVectorizer
 # $example off$
 
-if __name__ == "__main__":
-    spark = SparkSession\
-        .builder\
-        .appName("CountVectorizerExample")\
-        .getOrCreate()
-
+def create_data():
     # $example on$
     # Input data: Each row is a bag of words with a ID.
     df = spark.createDataFrame([
         (0, "a b c".split(" ")),
         (1, "a b b c a".split(" "))
     ], ["id", "words"])
-
+    return df
+    
+def pre_processing(df):
     # fit a CountVectorizerModel from the corpus.
     cv = CountVectorizer(inputCol="words", outputCol="features", vocabSize=3, minDF=2.0)
 
@@ -42,6 +53,19 @@ if __name__ == "__main__":
 
     result = model.transform(df)
     result.show(truncate=False)
-    # $example off$
+     
 
+if __name__ == "__main__":
+    # initialize
+    spark = SparkSession\
+        .builder\
+        .appName("CountVectorizerExample")\
+        .getOrCreate()
+        
+    # create data
+    df = create_data()
+    # pre_processing
+    pre_processing(df)
+
+    # stop
     spark.stop()
