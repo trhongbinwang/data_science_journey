@@ -15,11 +15,6 @@ def init_weights(shape):
     return tf.Variable(tf.random_normal(shape, stddev=0.01))
 
 
-def model(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden): # this network is the same as the previous one except with an extra hidden layer + dropout
-
-    return tf.matmul(h2, w_o)
-
-
 def inputs_placeholder(): 
     
     X = tf.placeholder("float", [None, 784])
