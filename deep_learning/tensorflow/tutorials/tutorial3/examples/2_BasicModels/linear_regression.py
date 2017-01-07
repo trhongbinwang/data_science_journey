@@ -17,35 +17,39 @@ learning_rate = 0.01
 training_epochs = 1000
 display_step = 50
 
-# Training Data
-train_X = numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,
-                         7.042,10.791,5.313,7.997,5.654,9.27,3.1])
-train_Y = numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,
-                         2.827,3.465,1.65,2.904,2.42,2.94,1.3])
-n_samples = train_X.shape[0]
 
-# tf Graph Input
-X = tf.placeholder("float")
-Y = tf.placeholder("float")
+def create_data():
+    # Training Data
+    train_X = numpy.asarray([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,
+                             7.042,10.791,5.313,7.997,5.654,9.27,3.1])
+    train_Y = numpy.asarray([1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,
+                             2.827,3.465,1.65,2.904,2.42,2.94,1.3])
+    n_samples = train_X.shape[0]
+    return [train_X, train_Y, n_samples]
 
-# Set model weights
-W = tf.Variable(rng.randn(), name="weight")
-b = tf.Variable(rng.randn(), name="bias")
 
-# Construct a linear model
-pred = tf.add(tf.mul(X, W), b)
+def inputs_placeholder(): 
+    # tf Graph Input
+    X = tf.placeholder("float")
+    Y = tf.placeholder("float")
+    return [X, Y]
 
-# Mean squared error
-cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
-# Gradient descent
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+def model(X, Y, n_samples):
+    # Set model weights
+    W = tf.Variable(rng.randn(), name="weight")
+    b = tf.Variable(rng.randn(), name="bias")
+    
+    # Construct a linear model
+    pred = tf.add(tf.mul(X, W), b)
+    
+    # Mean squared error
+    cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
+    # Gradient descent
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+    return [W, b, pred, cost, optimizer]
 
-# Initializing the variables
-init = tf.initialize_all_variables()
 
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
+def train(sess, train_X, train_Y, X, Y, W, b, pred, cost, optimizer):
 
     # Fit all training data
     for epoch in range(training_epochs):
@@ -84,3 +88,23 @@ with tf.Session() as sess:
     plt.plot(train_X, sess.run(W) * train_X + sess.run(b), label='Fitted line')
     plt.legend()
     plt.show()
+    
+    
+    
+if __name__ == '__main__':
+    ''' '''
+    #load data
+    [train_X, train_Y, n_samples] = create_data()
+    # define inputs
+    [X, Y] = inputs_placeholder()
+    # model
+    [W, b, pred, cost, optimizer] = model(X, Y, n_samples)
+    # Launch the graph
+    with tf.Session() as sess:
+            # Initializing the variables
+        init = tf.global_variables_initializer()
+    
+        sess.run(init)
+        # train
+        train(sess, train_X, train_Y, X, Y, W, b, pred, cost, optimizer)
+

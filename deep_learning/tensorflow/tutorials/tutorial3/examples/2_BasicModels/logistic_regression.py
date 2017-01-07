@@ -10,10 +10,8 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 from __future__ import print_function
 
 import tensorflow as tf
-
-# Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+
 
 # Parameters
 learning_rate = 0.01
@@ -21,29 +19,43 @@ training_epochs = 25
 batch_size = 100
 display_step = 1
 
-# tf Graph Input
-x = tf.placeholder(tf.float32, [None, 784]) # mnist data image of shape 28*28=784
-y = tf.placeholder(tf.float32, [None, 10]) # 0-9 digits recognition => 10 classes
 
-# Set model weights
-W = tf.Variable(tf.zeros([784, 10]))
-b = tf.Variable(tf.zeros([10]))
+def load_data():
+    # Import MNIST data
+    mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+    return mnist
 
-# Construct model
-pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
-
-# Minimize error using cross entropy
-cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), reduction_indices=1))
-# Gradient Descent
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
-
-# Initializing the variables
-init = tf.initialize_all_variables()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
-
+def inputs_placeholder():
+    # tf Graph Input
+    x = tf.placeholder(tf.float32, [None, 784]) # mnist data image of shape 28*28=784
+    y = tf.placeholder(tf.float32, [None, 10]) # 0-9 digits recognition => 10 classes
+    return [x, y]
+    
+def model(x, y):
+    # Set model weights
+    W = tf.Variable(tf.zeros([784, 10]))
+    b = tf.Variable(tf.zeros([10]))
+    
+    # Construct model
+    pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
+    
+    # Minimize error using cross entropy
+    cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), reduction_indices=1))
+    # Gradient Descent
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+    # Test model
+    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+    # Calculate accuracy
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    
+    return [cost, optimizer, accuracy]
+    
+def training(sess, mnist, x, y, cost, optimizer, accuracy):
+    ''' 
+    data: mnist
+    graph: x, y, cost, optimizer, accuracy
+    
+    '''
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
@@ -62,8 +74,36 @@ with tf.Session() as sess:
 
     print("Optimization Finished!")
 
-    # Test model
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    # Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     print("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    mnist = load_data()
+    # define inputs
+    [x, y] = inputs_placeholder()
+    # model
+    [cost, optimizer, accuracy] = model(x, y)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+    
+        sess.run(init)
+        # training
+        training(sess, mnist, x, y, cost, optimizer, accuracy)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+

@@ -6,21 +6,19 @@ Parag K. Mital, Jan 2016
 import tensorflow as tf
 import numpy as np
 from libs.utils import weight_variable, bias_variable, montage_batch
+import tensorflow.examples.tutorials.mnist.input_data as input_data
+import matplotlib.pyplot as plt
+
+
+# hyperparameters
+batch_size = 100
+n_epochs = 50
+n_examples = 20
+
 
 
 # %%
-def VAE(input_shape=[None, 784],
-        n_components_encoder=2048,
-        n_components_decoder=2048,
-        n_hidden=2,
-        debug=False):
-    # %%
-    # Input placeholder
-    if debug:
-        input_shape = [50, 784]
-        x = tf.Variable(np.zeros((input_shape), dtype=np.float32))
-    else:
-        x = tf.placeholder(tf.float32, input_shape)
+def VAE_model(x, n_components_encoder=2048, n_components_decoder=2048, n_hidden=2):
 
     activation = tf.nn.softplus
 
@@ -50,12 +48,7 @@ def VAE(input_shape=[None, 784],
 
     # %%
     # Sample from noise distribution p(eps) ~ N(0, 1)
-    if debug:
-        epsilon = tf.random_normal(
-            [dims[0], n_hidden])
-    else:
-        epsilon = tf.random_normal(
-            tf.pack([tf.shape(x)[0], n_hidden]))
+    epsilon = tf.random_normal(tf.pack([tf.shape(x)[0], n_hidden]))
 
     # Sample from posterior
     z = z_mu + tf.exp(z_log_sigma) * epsilon
@@ -87,44 +80,32 @@ def VAE(input_shape=[None, 784],
         1.0 + 2.0 * z_log_sigma - tf.square(z_mu) - tf.exp(2.0 * z_log_sigma),
         1)
     loss = tf.reduce_mean(log_px_given_z + kl_div)
-
-    return {'cost': loss, 'x': x, 'z': z, 'y': y}
-
-
-# %%
-def test_mnist():
-    """Summary
-
-    Returns
-    -------
-    name : TYPE
-        Description
-    """
-    # %%
-    import tensorflow as tf
-    import tensorflow.examples.tutorials.mnist.input_data as input_data
-    import matplotlib.pyplot as plt
-
-    # %%
-    # load MNIST as before
-    mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-    ae = VAE()
-
-    # %%
+    
     learning_rate = 0.001
-    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(ae['cost'])
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
-    # %%
-    # We create a session to use the graph
-    sess = tf.Session()
-    sess.run(tf.initialize_all_variables())
+    return [loss, optimizer, y, z]
+
+def load_data():
+    mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+    return mnist
+
+def inputs_placeholder():
+    input_shape=[None, 784]
+    x = tf.placeholder(tf.float32, input_shape)
+    return x
+    
+def train(sess, mnist, x, loss, optimizer, y, z):
+    '''
+    data: mnist
+    graph: x, loss, optimizer, y, z
+    
+    '''
+    
 
     # %%
     # Fit all training data
     t_i = 0
-    batch_size = 100
-    n_epochs = 50
-    n_examples = 20
     test_xs, _ = mnist.test.next_batch(n_examples)
     xs, ys = mnist.test.images, mnist.test.labels
     fig_manifold, ax_manifold = plt.subplots(1, 1)
@@ -135,16 +116,16 @@ def test_mnist():
         train_cost = 0
         for batch_i in range(mnist.train.num_examples // batch_size):
             batch_xs, _ = mnist.train.next_batch(batch_size)
-            train_cost += sess.run([ae['cost'], optimizer],
-                                   feed_dict={ae['x']: batch_xs})[0]
+            train_cost += sess.run([loss, optimizer],
+                                   feed_dict={x: batch_xs})[0]
             if batch_i % 2 == 0:
                 # %%
                 # Plot example reconstructions from latent layer
                 imgs = []
                 for img_i in np.linspace(-3, 3, n_examples):
                     for img_j in np.linspace(-3, 3, n_examples):
-                        z = np.array([[img_i, img_j]], dtype=np.float32)
-                        recon = sess.run(ae['y'], feed_dict={ae['z']: z})
+                        z_grid = np.array([[img_i, img_j]], dtype=np.float32)
+                        recon = sess.run(y, feed_dict={z: z_grid})
                         imgs.append(np.reshape(recon, (1, 28, 28, 1)))
                 imgs_cat = np.concatenate(imgs)
                 ax_manifold.imshow(montage_batch(imgs_cat))
@@ -152,7 +133,7 @@ def test_mnist():
 
                 # %%
                 # Plot example reconstructions
-                recon = sess.run(ae['y'], feed_dict={ae['x']: test_xs})
+                recon = sess.run(y, feed_dict={x: test_xs})
                 print(recon.shape)
                 for example_i in range(n_examples):
                     axs_reconstruction[0][example_i].imshow(
@@ -169,7 +150,7 @@ def test_mnist():
 
                 # %%
                 # Plot manifold of latent layer
-                zs = sess.run(ae['z'], feed_dict={ae['x']: xs})
+                zs = sess.run(z, feed_dict={x: xs})
                 ax_image_manifold.clear()
                 ax_image_manifold.scatter(zs[:, 0], zs[:, 1],
                     c=np.argmax(ys, 1), alpha=0.2)
@@ -187,11 +168,24 @@ def test_mnist():
         valid_cost = 0
         for batch_i in range(mnist.validation.num_examples // batch_size):
             batch_xs, _ = mnist.validation.next_batch(batch_size)
-            valid_cost += sess.run([ae['cost']],
-                                   feed_dict={ae['x']: batch_xs})[0]
+            valid_cost += sess.run([loss],
+                                   feed_dict={x: batch_xs})[0]
         print('Validation cost:', valid_cost /
               (mnist.validation.num_examples // batch_size))
 
 
 if __name__ == '__main__':
-    test_mnist()
+    ''' '''
+    #load data
+    mnist = load_data()
+    # difine inputs
+    x = inputs_placeholder()
+    # model
+    [loss, optimizer, y, z] = VAE_model(x)
+    # We create a session to use the graph
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+    train(sess, mnist, x, loss, optimizer, y, z)
+    
+    
+

@@ -11,34 +11,41 @@ from __future__ import print_function
 
 import numpy as np
 import tensorflow as tf
-
-# Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
-# In this example, we limit mnist data
-Xtr, Ytr = mnist.train.next_batch(5000) #5000 for training (nn candidates)
-Xte, Yte = mnist.test.next_batch(200) #200 for testing
 
-# tf Graph Input
-xtr = tf.placeholder("float", [None, 784])
-xte = tf.placeholder("float", [784])
+def load_data():
+    # Import MNIST data
+    mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+    
+    # In this example, we limit mnist data
+    Xtr, Ytr = mnist.train.next_batch(5000) #5000 for training (nn candidates)
+    Xte, Yte = mnist.test.next_batch(200) #200 for testing
+    return [Xtr, Ytr, Xte, Yte]
 
-# Nearest Neighbor calculation using L1 Distance
-# Calculate L1 Distance
-distance = tf.reduce_sum(tf.abs(tf.add(xtr, tf.neg(xte))), reduction_indices=1)
-# Prediction: Get min distance index (Nearest neighbor)
-pred = tf.arg_min(distance, 0)
+def inputs_placeholder():
+        
+    # tf Graph Input
+    xtr = tf.placeholder("float", [None, 784])
+    xte = tf.placeholder("float", [784])
+    return [xtr, xte]
 
-accuracy = 0.
+def model(xtr, xte):
+    # Nearest Neighbor calculation using L1 Distance
+    # Calculate L1 Distance
+    distance = tf.reduce_sum(tf.abs(tf.add(xtr, tf.neg(xte))), reduction_indices=1)
+    # Prediction: Get min distance index (Nearest neighbor)
+    pred = tf.arg_min(distance, 0)
+    return pred
 
-# Initializing the variables
-init = tf.initialize_all_variables()
 
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
-
+def train(sess, Xtr, Ytr, Xte, Yte, xtr, xte, pred):
+    '''
+    data: Xtr, Ytr, Xte, Yte
+    graph: xtr, xte, pred
+    
+    '''
+    accuracy = 0.
     # loop over test data
     for i in range(len(Xte)):
         # Get nearest neighbor
@@ -51,3 +58,28 @@ with tf.Session() as sess:
             accuracy += 1./len(Xte)
     print("Done!")
     print("Accuracy:", accuracy)
+
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    [Xtr, Ytr, Xte, Yte] = load_data()
+    # define inputs
+    [xtr, xte] = inputs_placeholder()
+    # model
+    pred = model(xtr, xte)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        # train
+        train(sess, Xtr, Ytr, Xte, Yte, xtr, xte, pred)
+    
+    
+    
+    
+
+
+
+

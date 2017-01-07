@@ -7,6 +7,12 @@ import tensorflow as tf
 from libs.connections import conv2d, linear
 from collections import namedtuple
 from math import sqrt
+import tensorflow.examples.tutorials.mnist.input_data as input_data
+
+# hyperparameters
+batch_size = 50
+n_epochs = 5
+
 
 
 # %%
@@ -114,13 +120,16 @@ def residual_network(x, n_outputs,
     return net
 
 
-def test_mnist():
-    """Test the resnet on MNIST."""
-    import tensorflow.examples.tutorials.mnist.input_data as input_data
-
+def load_data():
     mnist = input_data.read_data_sets('MNIST_data/', one_hot=True)
+    return mnist
+
+def inputs_placeholder():
     x = tf.placeholder(tf.float32, [None, 784])
     y = tf.placeholder(tf.float32, [None, 10])
+    return [x, y]    
+
+def model(x, y):
     y_pred = residual_network(x, 10)
 
     # %% Define loss/eval/training functions
@@ -130,15 +139,16 @@ def test_mnist():
     # %% Monitor accuracy
     correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, 'float'))
+    return [optimizer, accuracy]    
 
-    # %% We now create a new session to actually perform the initialization the
-    # variables:
-    sess = tf.Session()
-    sess.run(tf.initialize_all_variables())
-
+def train_validate(sess, mnist, x, y, optimizer, accuracy):
+    '''
+    sess
+    data: mnist
+    graph: x, y, optimizer, accuracy
+    
+    '''
     # %% We'll train in minibatches and report accuracy:
-    batch_size = 50
-    n_epochs = 5
     for epoch_i in range(n_epochs):
         # Training
         train_accuracy = 0
@@ -163,4 +173,22 @@ def test_mnist():
 
 
 if __name__ == '__main__':
-    test_mnist()
+    ''' '''
+    # load data
+    mnist = load_data()
+    # define inputs
+    [x, y] = inputs_placeholder()
+    # model
+    [optimizer, accuracy] = model(x, y)
+    # %% We now create a new session to actually perform the initialization the
+    # variables:
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+
+    # train_validate
+    train_validate(sess, mnist, x, y, optimizer, accuracy)
+    
+    
+    
+    
+ 
