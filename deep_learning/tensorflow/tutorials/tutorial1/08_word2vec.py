@@ -124,7 +124,7 @@ def model(voc_size, train_inputs, train_labels):
     train_op = tf.train.AdamOptimizer(1e-1).minimize(loss)
     return [loss, train_op, embeddings]
 
-def train(skip_gram_pairs, train_inputs, train_labels, loss, train_op, embeddings):
+def train(sess, skip_gram_pairs, train_inputs, train_labels, loss, train_op, embeddings):
     '''
     Inputs:
     data: skip_gram_pairs
@@ -132,22 +132,18 @@ def train(skip_gram_pairs, train_inputs, train_labels, loss, train_op, embedding
     Outputs: 
     trained embedding vectors
     '''
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # Initializing all variables
-        tf.global_variables_initializer().run()
     
-        for step in range(100):
-            # generate the data here
-            batch_inputs, batch_labels = generate_batch(skip_gram_pairs, batch_size)
-            _, loss_val = sess.run([train_op, loss],
-                    feed_dict={train_inputs: batch_inputs, train_labels: batch_labels})
-            if step % 10 == 0:
-              print("Loss at ", step, loss_val) # Report the loss
-    
-        # Final embeddings are ready for you to use. Need to normalize for practical use
-        trained_embeddings = embeddings.eval()
-        return trained_embeddings
+    for step in range(100):
+        # generate the data here
+        batch_inputs, batch_labels = generate_batch(skip_gram_pairs, batch_size)
+        _, loss_val = sess.run([train_op, loss],
+                feed_dict={train_inputs: batch_inputs, train_labels: batch_labels})
+        if step % 10 == 0:
+          print("Loss at ", step, loss_val) # Report the loss
+
+    # Final embeddings are ready for you to use. Need to normalize for practical use
+    trained_embeddings = embeddings.eval()
+    return trained_embeddings
 
 def display(trained_embeddings, rdic):
     # Show word2vec if dim is 2
@@ -168,10 +164,15 @@ def main():
     [train_inputs, train_labels] = inputs_placeholder()
     # model
     [loss, train_op, embeddings] = model(voc_size, train_inputs, train_labels)
-    # training
-    trained_embeddings = train(skip_gram_pairs, train_inputs, train_labels, loss, train_op, embeddings)
-    # display
-    display(trained_embeddings, rdic)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # Initializing all variables
+        tf.global_variables_initializer().run()
+
+        # training
+        trained_embeddings = train(sess, skip_gram_pairs, train_inputs, train_labels, loss, train_op, embeddings)
+        # display
+        display(trained_embeddings, rdic)
     
     
 

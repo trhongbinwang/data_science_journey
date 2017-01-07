@@ -76,39 +76,35 @@ def model(X, Y, p_keep_input, p_keep_hidden):
     non_storable_variable = tf.Variable(777)
     return [train_op, predict_op, global_step, saver]
 
-def train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op, global_step, saver): 
+def train(sess, trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op, global_step, saver): 
     '''
     data: trX, trY, teX, teY
     graph: (inputs) X, Y, p_keep_input, p_keep_hidden; (outputs) train_op, acc_op, global_step, saver
     
     '''
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
         
-        # load chpt
-        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
-        if ckpt and ckpt.model_checkpoint_path:
-            print(ckpt.model_checkpoint_path)
-            saver.restore(sess, ckpt.model_checkpoint_path) # restore all variables
-    
-        start = global_step.eval() # get last global_step
-        print("Start from:", start)
-    
-        for i in range(start, 100):
-            for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
-                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
-                                              p_keep_input: 0.8, p_keep_hidden: 0.5})
-            
-            # call saver.save in training loop
-            global_step.assign(i).eval() # set and update(eval) global_step with index, i
-            saver.save(sess, ckpt_dir + "/model.ckpt", global_step=global_step)
-            
-            print(i, np.mean(np.argmax(teY, axis=1) ==
-                             sess.run(predict_op, feed_dict={X: teX, Y: teY,
-                                                             p_keep_input: 1.0,
-                                                             p_keep_hidden: 1.0})))
+    # load chpt
+    ckpt = tf.train.get_checkpoint_state(ckpt_dir)
+    if ckpt and ckpt.model_checkpoint_path:
+        print(ckpt.model_checkpoint_path)
+        saver.restore(sess, ckpt.model_checkpoint_path) # restore all variables
+
+    start = global_step.eval() # get last global_step
+    print("Start from:", start)
+
+    for i in range(start, 100):
+        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
+                                          p_keep_input: 0.8, p_keep_hidden: 0.5})
+        
+        # call saver.save in training loop
+        global_step.assign(i).eval() # set and update(eval) global_step with index, i
+        saver.save(sess, ckpt_dir + "/model.ckpt", global_step=global_step)
+        
+        print(i, np.mean(np.argmax(teY, axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX, Y: teY,
+                                                         p_keep_input: 1.0,
+                                                         p_keep_hidden: 1.0})))
 
 if __name__ == '__main__':
     ''' '''
@@ -118,9 +114,13 @@ if __name__ == '__main__':
     [X, Y, p_keep_input, p_keep_hidden] = inputs_placeholder()
     # model
     [train_op, predict_op, global_step, saver] = model(X, Y, p_keep_input, p_keep_hidden)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
     
-    # train
-    train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op, global_step, saver)
+        # train
+        train(sess, trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op, global_step, saver)
     
     
     

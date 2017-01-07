@@ -31,17 +31,13 @@ def model(X, Y):
     predict_op = tf.argmax(py_x, 1) # at predict time, evaluate the argmax of the logistic regression
     return [train_op, predict_op]
     
-def train(trX, trY, teX, teY, X, Y, train_op, predict_op):
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
-    
-        for i in range(100):
-            for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
-                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
-            print(i, np.mean(np.argmax(teY, axis=1) ==
-                             sess.run(predict_op, feed_dict={X: teX})))
+def train(sess, trX, trY, teX, teY, X, Y, train_op, predict_op):
+    ''' train the model '''
+    for i in range(100):
+        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
+        print(i, np.mean(np.argmax(teY, axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX})))
 
 
 
@@ -53,8 +49,12 @@ if __name__ == '__main__':
     [X, Y] = inputs_placeholder()
     # define model
     [train_op, predict_op] = model(X, Y)
-    # train
-    train(trX, trY, teX, teY, X, Y, train_op, predict_op)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+        # train
+        train(sess, trX, trY, teX, teY, X, Y, train_op, predict_op)
     
     
     

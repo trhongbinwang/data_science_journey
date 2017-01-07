@@ -13,32 +13,9 @@ import matplotlib.pyplot as plt
 # hyperparameters
 dimensions=dimensions=[784, 256, 64]
 learning_rate = 0.001
+batch_size = 50
+n_epochs = 10
 
-# %%
-def autoencoder():
-    """Build a deep denoising autoencoder w/ tied weights.
-
-    Parameters
-    ----------
-    dimensions : list, optional
-        The number of neurons for each layer of the autoencoder.
-
-    Returns
-    -------
-    x : Tensor
-        Input placeholder to the network
-    z : Tensor
-        Inner-most latent representation
-    y : Tensor
-        Output reconstruction of the input
-    cost : Tensor
-        Overall cost to use for training
-    """
-    return {'x': x, 'z': z, 'y': y,
-            'corrupt_prob': corrupt_prob,
-            'cost': cost}
-
-# %%
 
 def load_data():
     # load MNIST as before
@@ -112,21 +89,17 @@ def model(x, corrupt_prob):
     return [cost, optimizer, y]
     
 
-def train(mnist, mean_img,  x, corrupt_prob, cost, optimizer):
+def train(sess, mnist, mean_img,  x, corrupt_prob, cost, optimizer):
     '''
+    sess
     data: mnist, mean_img
     graph: x, corrupt_prob, cost, optimizer
     
     '''
     # %%
-    # We create a session to use the graph
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
 
     # %%
     # Fit all training data
-    batch_size = 50
-    n_epochs = 10
     for epoch_i in range(n_epochs):
         for batch_i in range(mnist.train.num_examples // batch_size):
             batch_xs, _ = mnist.train.next_batch(batch_size)
@@ -136,6 +109,12 @@ def train(mnist, mean_img,  x, corrupt_prob, cost, optimizer):
         print(epoch_i, sess.run(cost, feed_dict={
             x: train, corrupt_prob: [1.0]}))
 
+def evaluate(sess, mnist, x, corrupt_prob, y):
+    '''
+    sess
+    data: mnist
+    graph:x, corrupt_prob, y
+    '''
     # %%
     # Plot example reconstructions
     n_examples = 15
@@ -151,7 +130,31 @@ def train(mnist, mean_img,  x, corrupt_prob, cost, optimizer):
             np.reshape([recon[example_i, :] + mean_img], (28, 28)))
     fig.show()
     plt.draw()
-    plt.waitforbuttonpress()
 
 if __name__ == '__main__':
-    test_mnist()
+    ''' '''
+    # load data
+    [mnist, mean_img] = load_data()
+    # define inputs    
+    [x, corrupt_prob] = inputs_placeholder()
+    # define model
+    [cost, optimizer, y] = model(x, corrupt_prob)
+    # We create a session to use the graph
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+    # training the model
+    train(sess, mnist, mean_img,  x, corrupt_prob, cost, optimizer)
+    # evaluate
+    evaluate(sess, mnist, x, corrupt_prob, y)
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

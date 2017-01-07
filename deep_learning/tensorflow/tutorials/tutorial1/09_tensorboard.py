@@ -67,27 +67,22 @@ def model(X, Y, p_keep_input, p_keep_hidden):
     
     return [train_op, acc_op, merged]
 
-def train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, acc_op, merged):
+def train(sess, trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, acc_op, merged):
     '''
     data: trX, trY, teX, teY
     graph: (inputs) X, Y, p_keep_input, p_keep_hidden, (outputs) train_op, acc_op, merged
     
     '''
-    with tf.Session() as sess:
-        # create a log writer. run 'tensorboard --logdir=./logs/nn_logs'
-        writer = tf.summary.FileWriter("./logs/nn_logs", sess.graph) # for 0.8
-    
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
-    
-        for i in range(10):
-            for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
-                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
-                                              p_keep_input: 0.8, p_keep_hidden: 0.5})
-            summary, acc = sess.run([merged, acc_op], feed_dict={X: teX, Y: teY,
-                                              p_keep_input: 1.0, p_keep_hidden: 1.0})
-            writer.add_summary(summary, i)  # Write summary
-            print(i, acc)                   # Report the accuracy
+    # create a log writer. run 'tensorboard --logdir=./logs/nn_logs'
+    writer = tf.summary.FileWriter("./logs/nn_logs", sess.graph) # for 0.8
+    for i in range(10):
+        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
+                                          p_keep_input: 0.8, p_keep_hidden: 0.5})
+        summary, acc = sess.run([merged, acc_op], feed_dict={X: teX, Y: teY,
+                                          p_keep_input: 1.0, p_keep_hidden: 1.0})
+        writer.add_summary(summary, i)  # Write summary
+        print(i, acc)                   # Report the accuracy
 
 if __name__ == '__main__':
     ''' '''
@@ -98,8 +93,11 @@ if __name__ == '__main__':
     # model
     [train_op, acc_op, merged] = model(X, Y, p_keep_input, p_keep_hidden)
     
-    # train
-    train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, acc_op, merged)
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+        # train
+        train(sess, trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, acc_op, merged)
     
     
     

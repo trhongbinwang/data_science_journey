@@ -86,24 +86,20 @@ def model(X, Y):
     predict_op = tf.argmax(py_x, 1)
     return [train_op, predict_op]
 
-def train(trX, trY, teX, teY, X, Y, train_op, predict_op):
+def train(sess, trX, trY, teX, teY, X, Y, train_op, predict_op):
     ''' '''
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
     
-        for i in range(100):
-            for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX)+1, batch_size)):
-                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
-    
-            test_indices = np.arange(len(teX))  # Get A Test Batch
-            np.random.shuffle(test_indices)
-            test_indices = test_indices[0:test_size]
-    
-            print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
-                             sess.run(predict_op, feed_dict={X: teX[test_indices],
-                                                             Y: teY[test_indices]})))
+    for i in range(10):
+        for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX)+1, batch_size)):
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
+
+        test_indices = np.arange(len(teX))  # Get A Test Batch
+        np.random.shuffle(test_indices)
+        test_indices = test_indices[0:test_size]
+
+        print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX[test_indices],
+                                                         Y: teY[test_indices]})))
 
 if __name__ == '__main__':
     ''' '''
@@ -113,8 +109,13 @@ if __name__ == '__main__':
     [X, Y] = inputs_placeholder()
     # model
     [train_op, predict_op] = model(X, Y)
-    # train
-    train(trX, trY, teX, teY, X, Y, train_op, predict_op)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+    
+        # train
+        train(sess, trX, trY, teX, teY, X, Y, train_op, predict_op)
     
     
     

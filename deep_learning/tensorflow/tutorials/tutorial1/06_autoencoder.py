@@ -53,25 +53,21 @@ def load_data():
     trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
     return [trX, trY, teX, teY]
     
-def train(trX, trY, teX, teY, X, mask, cost, train_op):
+def train(sess, trX, trY, teX, teY, X, mask, cost, train_op):
     ''' 
     data -- trX, trY, teX, teY
     graph -- (inputs) X, mask, (outputs) cost, train_op
     
     '''
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
     
-        for i in range(100):
-            for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
-                input_ = trX[start:end]
-                mask_np = np.random.binomial(1, 1 - corruption_level, input_.shape)
-                sess.run(train_op, feed_dict={X: input_, mask: mask_np})
-    
-            mask_np = np.random.binomial(1, 1 - corruption_level, teX.shape)
-            print(i, sess.run(cost, feed_dict={X: teX, mask: mask_np}))
+    for i in range(10):
+        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+            input_ = trX[start:end]
+            mask_np = np.random.binomial(1, 1 - corruption_level, input_.shape)
+            sess.run(train_op, feed_dict={X: input_, mask: mask_np})
+
+        mask_np = np.random.binomial(1, 1 - corruption_level, teX.shape)
+        print(i, sess.run(cost, feed_dict={X: teX, mask: mask_np}))
 
 
 if __name__ == '__main__':
@@ -82,8 +78,13 @@ if __name__ == '__main__':
     [X, mask] = inputs_placeholder()
     # define model
     [cost, train_op] = model(X, mask)
-    # train
-    train(trX, trY, teX, teY, X, mask, cost, train_op)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+
+        # train
+        train(sess, trX, trY, teX, teY, X, mask, cost, train_op)
     
     
     

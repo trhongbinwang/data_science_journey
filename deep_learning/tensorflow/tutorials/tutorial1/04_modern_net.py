@@ -45,20 +45,16 @@ def model(X, Y, p_keep_input, p_keep_hidden):
     predict_op = tf.argmax(py_x, 1)
     return [train_op, predict_op]
         
-def train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op):
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
+def train(sess, trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op):
     
-        for i in range(100):
-            for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
-                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
-                                              p_keep_input: 0.8, p_keep_hidden: 0.5})
-            print(i, np.mean(np.argmax(teY, axis=1) ==
-                             sess.run(predict_op, feed_dict={X: teX, Y: teY,
-                                                             p_keep_input: 1.0,
-                                                             p_keep_hidden: 1.0})))
+    for i in range(10):
+        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
+                                          p_keep_input: 0.8, p_keep_hidden: 0.5})
+        print(i, np.mean(np.argmax(teY, axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX, Y: teY,
+                                                         p_keep_input: 1.0,
+                                                         p_keep_hidden: 1.0})))
 
 if __name__ == '__main__':
     ''' '''
@@ -68,9 +64,14 @@ if __name__ == '__main__':
     [X, Y, p_keep_input, p_keep_hidden] = inputs_placeholder()
     # define model
     [train_op, predict_op] = model(X, Y, p_keep_input, p_keep_hidden)
-    # train
-    train(trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
     
+        # train
+        train(sess, trX, trY, teX, teY, X, Y, p_keep_input, p_keep_hidden, train_op, predict_op)
+        
     
 
 

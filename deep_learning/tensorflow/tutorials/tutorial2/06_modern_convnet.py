@@ -56,16 +56,12 @@ def model(x, y, is_training):
 
     return [train_step, accuracy]
 
-def train(mnist, x, y, is_training, train_step, accuracy): 
+def train(sess, mnist, x, y, is_training, train_step, accuracy): 
     '''
     data: mnist
     graph: x, y, is_training, train_step, accuracy
     
     '''
-    # %% We now create a new session to actually perform the initialization the
-    # variables:
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
     
     # %% We'll train in minibatches and report accuracy:
     n_epochs = 10
@@ -90,6 +86,9 @@ if __name__ == '__main__':
     [x, y, is_training] = inputs_placeholder()
     # model
     [train_step, accuracy] = model(x, y, is_training)
+    # start session
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
     # train
     train(mnist, x, y, is_training, train_step, accuracy)
     

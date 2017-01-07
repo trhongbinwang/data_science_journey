@@ -25,18 +25,13 @@ def model(X, Y):
     train_op = tf.train.GradientDescentOptimizer(0.01).minimize(cost) # construct an optimizer to minimize cost and fit line to my data
     return [train_op, w]
 
-def train(trX, trY, train_op, w):
+def train(sess, trX, trY, train_op, w):
     ''' train the model '''    
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize variables (in this case just variable W)
-        tf.global_variables_initializer().run()
-    
-        for i in range(100):
-            for (x, y) in zip(trX, trY):
-                sess.run(train_op, feed_dict={X: x, Y: y})
-    
-        print(sess.run(w))  # It should be something around 2
+    for i in range(100):
+        for (x, y) in zip(trX, trY):
+            sess.run(train_op, feed_dict={X: x, Y: y})
+
+    print(sess.run(w))  # It should be something around 2
 
 if __name__ == '__main__':    
     ''' '''
@@ -46,8 +41,12 @@ if __name__ == '__main__':
     [X, Y] = inputs_placeholder()
     # 3. define the model
     [train_op, w] = model(X, Y)
-    # 4. training
-    train(trX, trY, train_op, w)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize variables (in this case just variable W)
+        tf.global_variables_initializer().run()
+        # 4. training
+        train(sess, trX, trY, train_op, w)
     
     
     

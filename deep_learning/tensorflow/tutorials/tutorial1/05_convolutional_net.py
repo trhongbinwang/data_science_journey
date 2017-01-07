@@ -73,33 +73,29 @@ def model(X, Y, p_keep_conv, p_keep_hidden):
     predict_op = tf.argmax(py_x, 1)
     return [train_op, predict_op]
 
-def train(trX, trY, teX, teY, X, Y, p_keep_conv, p_keep_hidden, train_op, predict_op):
+def train(sess, trX, trY, teX, teY, X, Y, p_keep_conv, p_keep_hidden, train_op, predict_op):
     '''
     data -- trX, trY, teX, teY
     graph -- (inputs) X, Y, p_keep_conv, p_keep_hidden, (outputs) train_op, predict_op
     '''
-    # Launch the graph in a session
-    with tf.Session() as sess:
-        # you need to initialize all variables
-        tf.global_variables_initializer().run()
-        
-        # in a loop, create training_batch, feed to train_op
-        for i in range(100):
-            training_batch = zip(range(0, len(trX), batch_size),
-                                 range(batch_size, len(trX)+1, batch_size))
-            for start, end in training_batch:
-                sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
-                                              p_keep_conv: 0.8, p_keep_hidden: 0.5})
-            # create test batch
-            test_indices = np.arange(len(teX)) # Get A Test Batch
-            np.random.shuffle(test_indices)
-            test_indices = test_indices[0:test_size]
     
-            print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
-                             sess.run(predict_op, feed_dict={X: teX[test_indices],
-                                                             Y: teY[test_indices],
-                                                             p_keep_conv: 1.0,
-                                                             p_keep_hidden: 1.0})))
+    # in a loop, create training_batch, feed to train_op
+    for i in range(100):
+        training_batch = zip(range(0, len(trX), batch_size),
+                             range(batch_size, len(trX)+1, batch_size))
+        for start, end in training_batch:
+            sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
+                                          p_keep_conv: 0.8, p_keep_hidden: 0.5})
+        # create test batch
+        test_indices = np.arange(len(teX)) # Get A Test Batch
+        np.random.shuffle(test_indices)
+        test_indices = test_indices[0:test_size]
+
+        print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX[test_indices],
+                                                         Y: teY[test_indices],
+                                                         p_keep_conv: 1.0,
+                                                         p_keep_hidden: 1.0})))
 
 
 if __name__ == '__main__':
@@ -110,8 +106,12 @@ if __name__ == '__main__':
     [X, Y, p_keep_conv, p_keep_hidden] = inputs_placeholder()
     # define model
     [train_op, predict_op] = model(X, Y, p_keep_conv, p_keep_hidden)
-    # train
-    train(trX, trY, teX, teY, X, Y, p_keep_conv, p_keep_hidden, train_op, predict_op)
+    # Launch the graph in a session
+    with tf.Session() as sess:
+        # you need to initialize all variables
+        tf.global_variables_initializer().run()
+        # train
+        train(sess, trX, trY, teX, teY, X, Y, p_keep_conv, p_keep_hidden, train_op, predict_op)
     
 
 

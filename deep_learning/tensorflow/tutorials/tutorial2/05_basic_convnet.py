@@ -88,17 +88,12 @@ def model(x, y, keep_prob):
     
     return [optimizer, accuracy, W_conv1]
     
-def train(mnist, x, y, keep_prob, optimizer, accuracy, W_conv1): 
+def train(sess, mnist, x, y, keep_prob, optimizer, accuracy, W_conv1): 
     '''
     data: mnist
     graph: x, y, keep_prob, optimizer, accuracy, W_conv1
     
     '''
-    # %% We now create a new session to actually perform the initialization the
-    # variables:
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
-    
     # %% We'll train in minibatches and report accuracy:
     batch_size = 100
     n_epochs = 5
@@ -127,8 +122,12 @@ if __name__ == '__main__':
     [x, y, keep_prob] = inputs_placeholder()
     # model
     [optimizer, accuracy, W_conv1] = model(x, y, keep_prob)
+    # We create a session to use the graph
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+
     # train
-    train(mnist, x, y, keep_prob, optimizer, accuracy, W_conv1)
+    train(sess, mnist, x, y, keep_prob, optimizer, accuracy, W_conv1)
 
 
 
