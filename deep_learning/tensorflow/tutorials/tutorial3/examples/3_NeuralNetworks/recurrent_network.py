@@ -1,3 +1,6 @@
+from __future__ import print_function
+
+
 '''
 A Recurrent Neural Network (LSTM) implementation example using TensorFlow library.
 This example is using the MNIST database of handwritten digits (http://yann.lecun.com/exdb/mnist/)
@@ -6,21 +9,16 @@ Long Short Term Memory paper: http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_l
 Author: Aymeric Damien
 Project: https://github.com/aymericdamien/TensorFlow-Examples/
 '''
-
-from __future__ import print_function
-
-import tensorflow as tf
-from tensorflow.python.ops import rnn, rnn_cell
-
-# Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
-
 '''
 To classify images using a recurrent neural network, we consider every image
 row as a sequence of pixels. Because MNIST image shape is 28*28px, we will then
 handle 28 sequences of 28 steps for every sample.
 '''
+
+
+import tensorflow as tf
+from tensorflow.python.ops import rnn, rnn_cell
+from tensorflow.examples.tutorials.mnist import input_data
 
 # Parameters
 learning_rate = 0.001
@@ -34,18 +32,18 @@ n_steps = 28 # timesteps
 n_hidden = 128 # hidden layer num of features
 n_classes = 10 # MNIST total classes (0-9 digits)
 
-# tf Graph input
-x = tf.placeholder("float", [None, n_steps, n_input])
-y = tf.placeholder("float", [None, n_classes])
 
-# Define weights
-weights = {
-    'out': tf.Variable(tf.random_normal([n_hidden, n_classes]))
-}
-biases = {
-    'out': tf.Variable(tf.random_normal([n_classes]))
-}
+def load_data():
+    # Import MNIST data
+    mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+    return mnist
 
+def inputs_placeholder():
+    ''' '''    
+    # tf Graph input
+    x = tf.placeholder("float", [None, n_steps, n_input])
+    y = tf.placeholder("float", [None, n_classes])
+    return [x, y]
 
 def RNN(x, weights, biases):
 
@@ -69,22 +67,31 @@ def RNN(x, weights, biases):
     # Linear activation, using rnn inner loop last output
     return tf.matmul(outputs[-1], weights['out']) + biases['out']
 
-pred = RNN(x, weights, biases)
+def model(x, y):
+    ''' '''    
+    # Define weights
+    weights = {
+        'out': tf.Variable(tf.random_normal([n_hidden, n_classes]))
+    }
+    biases = {
+        'out': tf.Variable(tf.random_normal([n_classes]))
+    }
+    
+    
+    
+    pred = RNN(x, weights, biases)
+    
+    # Define loss and optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    
+    # Evaluate model
+    correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+    return [cost, optimizer, accuracy]
 
-# Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
-# Evaluate model
-correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-
-# Initializing the variables
-init = tf.initialize_all_variables()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
+def train_test(sess, mnist, x, y, cost, optimizer, accuracy):
     step = 1
     # Keep training until reach max iterations
     while step * batch_size < training_iters:
@@ -110,3 +117,28 @@ with tf.Session() as sess:
     test_label = mnist.test.labels[:test_len]
     print("Testing Accuracy:", \
         sess.run(accuracy, feed_dict={x: test_data, y: test_label}))
+
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    mnist = load_data()
+    # define inputs
+    [x, y] = inputs_placeholder()
+    # model
+    [cost, optimizer, accuracy] = model(x, y)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+        sess.run(init)
+
+        # train
+        train_test(sess, mnist, x, y, cost, optimizer, accuracy)
+
+
+
+
+
+
+

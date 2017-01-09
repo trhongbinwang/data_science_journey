@@ -8,12 +8,10 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 '''
 
 from __future__ import print_function
-
-# Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
-
 import tensorflow as tf
+
+from tensorflow.examples.tutorials.mnist import input_data
+
 
 # Parameters
 learning_rate = 0.001
@@ -27,12 +25,18 @@ n_hidden_2 = 256 # 2nd layer number of features
 n_input = 784 # MNIST data input (img shape: 28*28)
 n_classes = 10 # MNIST total classes (0-9 digits)
 
-# tf Graph input
-x = tf.placeholder("float", [None, n_input])
-y = tf.placeholder("float", [None, n_classes])
+def load_data():
+    # Import MNIST data
+    mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+    return mnist
+
+def inputs_placeholder():
+    # tf Graph input
+    x = tf.placeholder("float", [None, n_input])
+    y = tf.placeholder("float", [None, n_classes])
+    return [x, y]
 
 
-# Create model
 def multilayer_perceptron(x, weights, biases):
     # Hidden layer with RELU activation
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
@@ -44,32 +48,42 @@ def multilayer_perceptron(x, weights, biases):
     out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
     return out_layer
 
-# Store layers weight & bias
-weights = {
-    'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
-    'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
-    'out': tf.Variable(tf.random_normal([n_hidden_2, n_classes]))
-}
-biases = {
-    'b1': tf.Variable(tf.random_normal([n_hidden_1])),
-    'b2': tf.Variable(tf.random_normal([n_hidden_2])),
-    'out': tf.Variable(tf.random_normal([n_classes]))
-}
+def model(x, y):
+    # Create model
+    
+    # Store layers weight & bias
+    weights = {
+        'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
+        'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
+        'out': tf.Variable(tf.random_normal([n_hidden_2, n_classes]))
+    }
+    biases = {
+        'b1': tf.Variable(tf.random_normal([n_hidden_1])),
+        'b2': tf.Variable(tf.random_normal([n_hidden_2])),
+        'out': tf.Variable(tf.random_normal([n_classes]))
+    }
+    
+    # Construct model
+    pred = multilayer_perceptron(x, weights, biases)
+    
+    # Define loss and optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    
+    # Test model
+    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+    # Calculate accuracy
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
-# Construct model
-pred = multilayer_perceptron(x, weights, biases)
+    return [cost, optimizer, accuracy]
 
-# Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
-# Initializing the variables
-init = tf.initialize_all_variables()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
-
+def train_test(sess, mnist, x, y, cost, optimizer, accuracy):
+    '''
+    data: mnist
+    graph: x, y, cost, optimize
+    
+    '''
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
@@ -88,8 +102,37 @@ with tf.Session() as sess:
                 "{:.9f}".format(avg_cost))
     print("Optimization Finished!")
 
-    # Test model
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    # Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     print("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
+
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    mnist = load_data()
+    # define inputs
+    [x, y] = inputs_placeholder()
+    # model
+    [cost, optimizer, accuracy] = model(x,y)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        # train
+        train_test(sess, mnist, x, y, cost, optimizer, accuracy)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,10 +12,7 @@ from __future__ import print_function
 import tensorflow as tf
 from tensorflow.python.ops import rnn, rnn_cell
 import numpy as np
-
-# Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 '''
 To classify images using a bidirectional recurrent neural network, we consider
@@ -35,19 +32,16 @@ n_steps = 28 # timesteps
 n_hidden = 128 # hidden layer num of features
 n_classes = 10 # MNIST total classes (0-9 digits)
 
-# tf Graph input
-x = tf.placeholder("float", [None, n_steps, n_input])
-y = tf.placeholder("float", [None, n_classes])
+def load_data():
+    # Import MNIST data
+    mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+    return mnist
 
-# Define weights
-weights = {
-    # Hidden layer weights => 2*n_hidden because of forward + backward cells
-    'out': tf.Variable(tf.random_normal([2*n_hidden, n_classes]))
-}
-biases = {
-    'out': tf.Variable(tf.random_normal([n_classes]))
-}
-
+def inputs_placeholder():
+    # tf Graph input
+    x = tf.placeholder("float", [None, n_steps, n_input])
+    y = tf.placeholder("float", [None, n_classes])
+    return [x, y]
 
 def BiRNN(x, weights, biases):
 
@@ -78,23 +72,30 @@ def BiRNN(x, weights, biases):
 
     # Linear activation, using rnn inner loop last output
     return tf.matmul(outputs[-1], weights['out']) + biases['out']
+    
+def model(x,y):
+    # Define weights
+    weights = {
+        # Hidden layer weights => 2*n_hidden because of forward + backward cells
+        'out': tf.Variable(tf.random_normal([2*n_hidden, n_classes]))
+    }
+    biases = {
+        'out': tf.Variable(tf.random_normal([n_classes]))
+    }
+    pred = BiRNN(x, weights, biases)
+    
+    # Define loss and optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    
+    # Evaluate model
+    correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+    
+    return [cost, optimizer, accuracy]
 
-pred = BiRNN(x, weights, biases)
-
-# Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-
-# Evaluate model
-correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-
-# Initializing the variables
-init = tf.initialize_all_variables()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
+def train_test(sess, mnist, x, y, cost, optimizer, accuracy):
+    ''' '''
     step = 1
     # Keep training until reach max iterations
     while step * batch_size < training_iters:
@@ -120,3 +121,24 @@ with tf.Session() as sess:
     test_label = mnist.test.labels[:test_len]
     print("Testing Accuracy:", \
         sess.run(accuracy, feed_dict={x: test_data, y: test_label}))
+
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    mnist = load_data()
+    # define inputs
+    [x, y] = inputs_placeholder()
+    # model
+    [cost, optimizer, accuracy] = model(x,y)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        # train
+        train_test(sess, mnist, x, y, cost, optimizer, accuracy)
+    
+    
+    
+

@@ -90,22 +90,18 @@ seq_max_len = 20 # Sequence max length
 n_hidden = 64 # hidden layer num of features
 n_classes = 2 # linear sequence or not
 
-trainset = ToySequenceData(n_samples=1000, max_seq_len=seq_max_len)
-testset = ToySequenceData(n_samples=500, max_seq_len=seq_max_len)
-
-# tf Graph input
-x = tf.placeholder("float", [None, seq_max_len, 1])
-y = tf.placeholder("float", [None, n_classes])
-# A placeholder for indicating each sequence length
-seqlen = tf.placeholder(tf.int32, [None])
-
-# Define weights
-weights = {
-    'out': tf.Variable(tf.random_normal([n_hidden, n_classes]))
-}
-biases = {
-    'out': tf.Variable(tf.random_normal([n_classes]))
-}
+def load_data():
+    trainset = ToySequenceData(n_samples=1000, max_seq_len=seq_max_len)
+    testset = ToySequenceData(n_samples=500, max_seq_len=seq_max_len)
+    return [trainset, testset]
+    
+def inputs_placeholder():
+    # tf Graph input
+    x = tf.placeholder("float", [None, seq_max_len, 1])
+    y = tf.placeholder("float", [None, n_classes])
+    # A placeholder for indicating each sequence length
+    seqlen = tf.placeholder(tf.int32, [None])
+    return [x, y, seqlen]
 
 
 def dynamicRNN(x, seqlen, weights, biases):
@@ -151,22 +147,33 @@ def dynamicRNN(x, seqlen, weights, biases):
     # Linear activation, using outputs computed above
     return tf.matmul(outputs, weights['out']) + biases['out']
 
-pred = dynamicRNN(x, seqlen, weights, biases)
+def model(x, y, seqlen):
+    # Define weights
+    weights = {
+        'out': tf.Variable(tf.random_normal([n_hidden, n_classes]))
+    }
+    biases = {
+        'out': tf.Variable(tf.random_normal([n_classes]))
+    }
+    
+    
+    pred = dynamicRNN(x, seqlen, weights, biases)
+    
+    # Define loss and optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
+    
+    # Evaluate model
+    correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+    return [cost, optimizer, accuracy]
 
-# Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
-
-# Evaluate model
-correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-
-# Initializing the variables
-init = tf.initialize_all_variables()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
+def train_test(sess, trainset, testset, x, y, seqlen, cost, optimizer, accuracy):
+    '''
+    data: trainset, testset
+    graph:  (inputs)x, y, seqlen, (outputs) cost, optimizer, accuracy
+    
+    '''
     step = 1
     # Keep training until reach max iterations
     while step * batch_size < training_iters:
@@ -194,3 +201,28 @@ with tf.Session() as sess:
     print("Testing Accuracy:", \
         sess.run(accuracy, feed_dict={x: test_data, y: test_label,
                                       seqlen: test_seqlen}))
+
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    [trainset, testset] = load_data()
+    # define inputs
+    [x, y, seqlen] = inputs_placeholder()
+    # model
+    [cost, optimizer, accuracy] = model(x, y, seqlen)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        # train
+        train_test(sess, trainset, testset, x, y, seqlen, cost, optimizer, accuracy)
+
+
+
+
+
+
+
+
