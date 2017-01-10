@@ -5,15 +5,20 @@ This example is using the MNIST database of handwritten digits
 
 Author: Aymeric Damien
 Project: https://github.com/aymericdamien/TensorFlow-Examples/
+
+In summary, 
+1. use with tf.name_scope('Model'): 
+2. create summary ops to visualize such as: tf.summary.scalar 
+3. tf.summary.merge_all() merge all ops
+4. write logs tf.summary.FileWriter
+5. to visualize: tensorboard --logdir=/tmp/tensorflow_logs
+
 '''
 
 from __future__ import print_function
 
 import tensorflow as tf
-
-# Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 # Parameters
 learning_rate = 0.01
@@ -28,12 +33,18 @@ n_hidden_2 = 256 # 2nd layer number of features
 n_input = 784 # MNIST data input (img shape: 28*28)
 n_classes = 10 # MNIST total classes (0-9 digits)
 
-# tf Graph Input
-# mnist data image of shape 28*28=784
-x = tf.placeholder(tf.float32, [None, 784], name='InputData')
-# 0-9 digits recognition => 10 classes
-y = tf.placeholder(tf.float32, [None, 10], name='LabelData')
+def load_data():
+    # Import MNIST data
+    mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+    return mnist
 
+def inputs_placeholder():
+    # tf Graph Input
+    # mnist data image of shape 28*28=784
+    x = tf.placeholder(tf.float32, [None, 784], name='InputData')
+    # 0-9 digits recognition => 10 classes
+    y = tf.placeholder(tf.float32, [None, 10], name='LabelData')
+    return [x, y]
 
 # Create model
 def multilayer_perceptron(x, weights, biases):
@@ -41,76 +52,72 @@ def multilayer_perceptron(x, weights, biases):
     layer_1 = tf.add(tf.matmul(x, weights['w1']), biases['b1'])
     layer_1 = tf.nn.relu(layer_1)
     # Create a summary to visualize the first layer ReLU activation
-    tf.histogram_summary("relu1", layer_1)
+    tf.summary.histogram("relu1", layer_1)
     # Hidden layer with RELU activation
     layer_2 = tf.add(tf.matmul(layer_1, weights['w2']), biases['b2'])
     layer_2 = tf.nn.relu(layer_2)
     # Create another summary to visualize the second layer ReLU activation
-    tf.histogram_summary("relu2", layer_2)
+    tf.summary.histogram("relu2", layer_2)
     # Output layer
     out_layer = tf.add(tf.matmul(layer_2, weights['w3']), biases['b3'])
     return out_layer
 
-# Store layers weight & bias
-weights = {
-    'w1': tf.Variable(tf.random_normal([n_input, n_hidden_1]), name='W1'),
-    'w2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2]), name='W2'),
-    'w3': tf.Variable(tf.random_normal([n_hidden_2, n_classes]), name='W3')
-}
-biases = {
-    'b1': tf.Variable(tf.random_normal([n_hidden_1]), name='b1'),
-    'b2': tf.Variable(tf.random_normal([n_hidden_2]), name='b2'),
-    'b3': tf.Variable(tf.random_normal([n_classes]), name='b3')
-}
-
-# Encapsulating all ops into scopes, making Tensorboard's Graph
-# Visualization more convenient
-with tf.name_scope('Model'):
-    # Build model
-    pred = multilayer_perceptron(x, weights, biases)
-
-with tf.name_scope('Loss'):
-    # Softmax Cross entropy (cost function)
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
-
-with tf.name_scope('SGD'):
-    # Gradient Descent
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    # Op to calculate every variable gradient
-    grads = tf.gradients(loss, tf.trainable_variables())
-    grads = list(zip(grads, tf.trainable_variables()))
-    # Op to update all variables according to their gradient
-    apply_grads = optimizer.apply_gradients(grads_and_vars=grads)
-
-with tf.name_scope('Accuracy'):
-    # Accuracy
-    acc = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    acc = tf.reduce_mean(tf.cast(acc, tf.float32))
-
-# Initializing the variables
-init = tf.initialize_all_variables()
-
-# Create a summary to monitor cost tensor
-tf.scalar_summary("loss", loss)
-# Create a summary to monitor accuracy tensor
-tf.scalar_summary("accuracy", acc)
-# Create summaries to visualize weights
-for var in tf.trainable_variables():
-    tf.histogram_summary(var.name, var)
-# Summarize all gradients
-for grad, var in grads:
-    tf.histogram_summary(var.name + '/gradient', grad)
-# Merge all summaries into a single op
-merged_summary_op = tf.merge_all_summaries()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
-
+def model(x, y):
+    # Store layers weight & bias
+    weights = {
+        'w1': tf.Variable(tf.random_normal([n_input, n_hidden_1]), name='W1'),
+        'w2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2]), name='W2'),
+        'w3': tf.Variable(tf.random_normal([n_hidden_2, n_classes]), name='W3')
+    }
+    biases = {
+        'b1': tf.Variable(tf.random_normal([n_hidden_1]), name='b1'),
+        'b2': tf.Variable(tf.random_normal([n_hidden_2]), name='b2'),
+        'b3': tf.Variable(tf.random_normal([n_classes]), name='b3')
+    }
+    
+    # Encapsulating all ops into scopes, making Tensorboard's Graph
+    # Visualization more convenient
+    with tf.name_scope('Model'):
+        # Build model
+        pred = multilayer_perceptron(x, weights, biases)
+    
+    with tf.name_scope('Loss'):
+        # Softmax Cross entropy (cost function)
+        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
+    
+    with tf.name_scope('SGD'):
+        # Gradient Descent
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+        # Op to calculate every variable gradient
+        grads = tf.gradients(loss, tf.trainable_variables())
+        grads = list(zip(grads, tf.trainable_variables()))
+        # Op to update all variables according to their gradient
+        apply_grads = optimizer.apply_gradients(grads_and_vars=grads)
+    
+    with tf.name_scope('Accuracy'):
+        # Accuracy
+        acc = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+        acc = tf.reduce_mean(tf.cast(acc, tf.float32))
+    
+    # Create a summary to monitor cost tensor
+    tf.summary.scalar("loss", loss)
+    # Create a summary to monitor accuracy tensor
+    tf.summary.scalar("accuracy", acc)
+    # Create summaries to visualize weights
+    for var in tf.trainable_variables():
+        tf.summary.histogram(var.name, var)
+    # Summarize all gradients
+    for grad, var in grads:
+        tf.summary.histogram(var.name + '/gradient', grad)
+    # Merge all summaries into a single op
+    merged_summary_op = tf.summary.merge_all()
     # op to write logs to Tensorboard
-    summary_writer = tf.train.SummaryWriter(logs_path,
+    summary_writer = tf.summary.FileWriter(logs_path,
                                             graph=tf.get_default_graph())
+    
+    return [apply_grads, loss, acc, merged_summary_op, summary_writer]
 
+def train_test(sess, mnist, x, y, apply_grads, loss, acc, merged_summary_op, summary_writer):
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
@@ -139,3 +146,20 @@ with tf.Session() as sess:
     print("Run the command line:\n" \
           "--> tensorboard --logdir=/tmp/tensorflow_logs " \
           "\nThen open http://0.0.0.0:6006/ into your web browser")
+
+if __name__ == '__main__':
+    ''' '''
+    # load data
+    mnist = load_data()
+    # define inputs
+    [x, y] = inputs_placeholder()
+    # model
+    [apply_grads, loss, acc, merged_summary_op, summary_writer] = model(x, y)
+    # Launch the graph
+    with tf.Session() as sess:
+        # Initializing the variables
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        # train
+        train_test(sess, mnist, x, y, apply_grads, loss, acc, merged_summary_op, summary_writer)
+        
