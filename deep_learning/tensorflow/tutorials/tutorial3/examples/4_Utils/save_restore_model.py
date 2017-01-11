@@ -5,6 +5,11 @@ This example is using the MNIST database of handwritten digits
 
 Author: Aymeric Damien
 Project: https://github.com/aymericdamien/TensorFlow-Examples/
+
+summary of save and restore model
+1.  create saver object first.    saver = tf.train.Saver()
+2. 
+https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard5/tf.train.Saver.md
 '''
 
 from __future__ import print_function
