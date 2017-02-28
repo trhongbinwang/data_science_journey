@@ -20,7 +20,7 @@ def model(X, Y):
     
     '''
     w = tf.Variable(0.0, name="weights") # create a shared variable (like theano.shared) for the weight matrix
-    y_model = tf.mul(X, w) # lr is just X*w    
+    y_model = tf.multiply(X, w) # lr is just X*w    
     cost = tf.square(Y - y_model) # use square error for cost function    
     train_op = tf.train.GradientDescentOptimizer(0.01).minimize(cost) # construct an optimizer to minimize cost and fit line to my data
     return [train_op, w]

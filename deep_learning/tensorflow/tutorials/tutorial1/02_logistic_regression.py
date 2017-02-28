@@ -26,7 +26,7 @@ def model(X, Y):
     
     py_x = tf.matmul(X, w)
     
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y)) # compute mean cross entropy (softmax is applied internally)
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y)) # compute mean cross entropy (softmax is applied internally)
     train_op = tf.train.GradientDescentOptimizer(0.05).minimize(cost) # construct optimizer
     predict_op = tf.argmax(py_x, 1) # at predict time, evaluate the argmax of the logistic regression
     return [train_op, predict_op]

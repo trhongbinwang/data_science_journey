@@ -40,7 +40,7 @@ def model(X, Y, n_samples):
     b = tf.Variable(rng.randn(), name="bias")
     
     # Construct a linear model
-    pred = tf.add(tf.mul(X, W), b)
+    pred = tf.add(tf.multiply(X, W), b)
     
     # Mean squared error
     cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
