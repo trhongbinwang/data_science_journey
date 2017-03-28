@@ -43,7 +43,7 @@ print(b.grad)    # b.grad = 1
 # 3. define loss and optimizer
 # 4. forward
 # 5. compute loss
-# 6. backprop
+# 6. backprop   --- backprop before optimization because latter need gradient info
 # 7. optimimize a step --- 4 to 7 can put together called train procedure
 
 # Create tensors.
