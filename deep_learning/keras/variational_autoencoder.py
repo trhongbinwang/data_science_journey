@@ -8,6 +8,8 @@ how to reuse the existing trained layers
 1. all models in one function to enable share and reuse
 2. define the loss function inside the model function to get extra inputs. 
 
+a little difference 
+
 Reference: "Auto-Encoding Variational Bayes" https://arxiv.org/abs/1312.6114
 '''
 import numpy as np
