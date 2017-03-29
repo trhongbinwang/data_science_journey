@@ -4,7 +4,7 @@ import torchvision.datasets as dsets
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 
-
+# the main thing is to put model and data onto gpu
 # Hyper Parameters 
 input_size = 784
 hidden_size = 500
@@ -47,7 +47,7 @@ class Net(nn.Module):
         return out
     
 net = Net(input_size, hidden_size, num_classes)
-net.cuda()   
+net.cuda()   # put model onto gpu
     
 # Loss and Optimizer
 criterion = nn.CrossEntropyLoss()  
@@ -57,7 +57,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):  
         # Convert torch tensor to Variable
-        images = Variable(images.view(-1, 28*28)).cuda()
+        images = Variable(images.view(-1, 28*28)).cuda() # put data onto gpu
         labels = Variable(labels).cuda()
         
         # Forward + Backward + Optimize
