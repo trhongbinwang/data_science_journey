@@ -50,6 +50,12 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)  
 
 # Training the Model
+# for each epoch; for each minibatch; do
+# 1. define input variables -- you need variables to wrap the tensor
+# 2. one cycle training: Forward + Backward + Optimize
+# 3. print progress
+#
+# then test model and save it
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
         images = Variable(images.view(-1, 28*28))
