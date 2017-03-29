@@ -37,7 +37,7 @@ def lstm(X, W, B, lstm_size):
     # XT shape: (time_step_size, batch_size, input_vec_size)
     XR = tf.reshape(XT, [-1, lstm_size]) # each row has input for each lstm cell (lstm_size=input_vec_size)
     # XR shape: (time_step_size * batch_size, input_vec_size)
-    X_split = tf.split(0, time_step_size, XR) # split them to time_step_size (28 arrays)
+    X_split = tf.split(axis=0, num_or_size_splits=time_step_size, value=XR) # split them to time_step_size (28 arrays)
     # Each array shape: (batch_size, input_vec_size)
 
     # Make lstm with lstm_size (each input vector size)
@@ -81,7 +81,7 @@ def model(X, Y):
     
     py_x, state_size = lstm(X, W, B, lstm_size)
     
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y))
     train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
     predict_op = tf.argmax(py_x, 1)
     return [train_op, predict_op]

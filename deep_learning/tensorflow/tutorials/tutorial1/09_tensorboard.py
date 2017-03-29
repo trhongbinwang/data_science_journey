@@ -53,7 +53,7 @@ def model(X, Y, p_keep_input, p_keep_hidden):
     py_x = mlp_dropout(X, w_h, w_h2, w_o, p_keep_input, p_keep_hidden)
     
     with tf.name_scope("cost"):
-        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
+        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y))
         train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
         # Add scalar summary for cost
         tf.summary.scalar("cost", cost)

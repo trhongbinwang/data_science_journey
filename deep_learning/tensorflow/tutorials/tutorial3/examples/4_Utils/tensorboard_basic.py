@@ -48,7 +48,7 @@ def model(x, y):
         pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
     with tf.name_scope('Loss'):
         # Minimize error using cross entropy
-        cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), reduction_indices=1))
+        cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), axis=1))
     with tf.name_scope('SGD'):
         # Gradient Descent
         optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)

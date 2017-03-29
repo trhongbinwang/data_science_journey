@@ -9,7 +9,7 @@ def inputs_placeholder():
     return [a, b]
 
 def model(a, b):
-    y = tf.mul(a, b) # multiply the symbolic variables
+    y = tf.multiply(a, b) # multiply the symbolic variables
     return y
 
 def train(sess, y, a, b): 

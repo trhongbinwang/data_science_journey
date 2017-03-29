@@ -26,7 +26,7 @@ def model(X, Y):
     h = tf.nn.sigmoid(tf.matmul(X, w_h))
     py_x = tf.matmul(h, w_o)
     
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y)) # compute costs
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y)) # compute costs
     train_op = tf.train.GradientDescentOptimizer(0.05).minimize(cost) # construct an optimizer
     predict_op = tf.argmax(py_x, 1)
     return [train_op, predict_op]

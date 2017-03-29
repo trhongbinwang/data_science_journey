@@ -48,7 +48,7 @@ def VAE_model(x, n_components_encoder=2048, n_components_decoder=2048, n_hidden=
 
     # %%
     # Sample from noise distribution p(eps) ~ N(0, 1)
-    epsilon = tf.random_normal(tf.pack([tf.shape(x)[0], n_hidden]))
+    epsilon = tf.random_normal(tf.stack([tf.shape(x)[0], n_hidden]))
 
     # Sample from posterior
     z = z_mu + tf.exp(z_log_sigma) * epsilon
