@@ -4,7 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torch.autograd import Variable
 
+#########################
+'''
+Hyper parameters -- input through argparse
+load dataset
+define model
+loss and optimization
 
+'''
+
+##########################
 # Hyper Parameters
 input_size = 1
 output_size = 1
@@ -19,6 +28,7 @@ x_train = np.array([[3.3], [4.4], [5.5], [6.71], [6.93], [4.168],
 y_train = np.array([[1.7], [2.76], [2.09], [3.19], [1.694], [1.573], 
                     [3.366], [2.596], [2.53], [1.221], [2.827], 
                     [3.465], [1.65], [2.904], [1.3]], dtype=np.float32)
+
 
 # Linear Regression Model
 class LinearRegression(nn.Module):
@@ -42,7 +52,7 @@ for epoch in range(num_epochs):
     inputs = Variable(torch.from_numpy(x_train))
     targets = Variable(torch.from_numpy(y_train))
 
-    # Forward + Backward + Optimize
+    # Forward + Backward + Optimize --- standard template
     optimizer.zero_grad()  
     outputs = model(inputs)
     loss = criterion(outputs, targets)
@@ -61,4 +71,4 @@ plt.legend()
 plt.show()
 
 # Save the Model
-torch.save(model.state_dict(), 'model.pkl')
+torch.save(model.state_dict(), '/home/hongbin/outputs/model.pkl')
