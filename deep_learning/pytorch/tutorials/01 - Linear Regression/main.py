@@ -65,10 +65,10 @@ for epoch in range(num_epochs):
         
 # Plot the graph
 predicted = model(Variable(torch.from_numpy(x_train))).data.numpy()
-plt.plot(x_train, y_train, 'ro', label='Original data')
-plt.plot(x_train, predicted, label='Fitted line')
-plt.legend()
-plt.show()
+#plt.plot(x_train, y_train, 'ro', label='Original data')
+#plt.plot(x_train, predicted, label='Fitted line')
+#plt.legend()
+#plt.show()
 
 # Save the Model
 torch.save(model.state_dict(), '/home/hongbin/outputs/model.pkl')
