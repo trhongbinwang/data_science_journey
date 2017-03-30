@@ -23,7 +23,7 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/00 - PyTorch Basics/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-216">
+            <state relative-caret-position="864">
               <caret line="66" column="29" selection-start-line="66" selection-start-column="29" selection-end-line="66" selection-end-column="29" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
@@ -32,35 +32,33 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/01 - Linear Regression/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2140">
-              <caret line="66" column="112" selection-start-line="66" selection-start-column="112" selection-end-line="66" selection-end-column="112" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/03 - Feedforward Neural Network/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="main-gpu.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/04 - Convolutional Neural Network/main-gpu.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="476">
+              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="module.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/nn/modules/module.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="368">
+              <caret line="369" column="8" selection-start-line="369" selection-start-column="8" selection-end-line="369" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main-gpu.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/03 - Feedforward Neural Network/main-gpu.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-856">
-              <caret line="34" column="39" selection-start-line="34" selection-start-column="39" selection-end-line="34" selection-end-column="39" />
+            <state relative-caret-position="-1260">
+              <caret line="16" column="55" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="55" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -77,6 +75,7 @@
         <option value="$PROJECT_DIR$/01 - Linear Regression/main.py" />
         <option value="$PROJECT_DIR$/02 - Logistic Regression/main.py" />
         <option value="$PROJECT_DIR$/03 - Feedforward Neural Network/main-gpu.py" />
+        <option value="$PROJECT_DIR$/04 - Convolutional Neural Network/main-gpu.py" />
       </list>
     </option>
   </component>
@@ -126,6 +125,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="tutorials" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tutorials" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tutorials" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="04 - Convolutional Neural Network" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -192,7 +205,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../pytorch/tutorials" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
@@ -445,43 +458,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/nn/modules/linear.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="524">
-          <caret line="51" column="30" selection-start-line="51" selection-start-column="30" selection-end-line="51" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/optim/sgd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1440">
           <caret line="40" column="8" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/nn/modules/module.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1534">
-          <caret line="23" column="6" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/01 - Linear Regression/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2140">
-          <caret line="66" column="112" selection-start-line="66" selection-start-column="112" selection-end-line="66" selection-end-column="112" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/autograd/variable.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
           <folding />
         </state>
       </provider>
@@ -491,24 +471,34 @@
         <state relative-caret-position="728">
           <caret line="79" column="27" selection-start-line="79" selection-start-column="27" selection-end-line="79" selection-end-column="27" />
           <folding>
-            <element signature="e#0#12#0" expanded="true" />
+            <element signature="e#0#12#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/03 - Feedforward Neural Network/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="-1108">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#12#0" expanded="true" />
+            <element signature="e#0#12#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/01 - Linear Regression/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2140">
+          <caret line="66" column="112" selection-start-line="66" selection-start-column="112" selection-end-line="66" selection-end-column="112" />
+          <folding>
+            <element signature="e#0#12#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/00 - PyTorch Basics/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-216">
+        <state relative-caret-position="864">
           <caret line="66" column="29" selection-start-line="66" selection-start-column="29" selection-end-line="66" selection-end-column="29" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
@@ -516,10 +506,52 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torchvision-0.1.6-py3.5.egg!/torchvision/transforms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2772">
+          <caret line="26" column="6" selection-start-line="26" selection-start-column="6" selection-end-line="26" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/autograd/variable.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9050">
+          <caret line="479" column="8" selection-start-line="479" selection-start-column="8" selection-end-line="479" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/nn/modules/linear.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="734">
+          <caret line="32" column="8" selection-start-line="32" selection-start-column="8" selection-end-line="32" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/03 - Feedforward Neural Network/main-gpu.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-856">
-          <caret line="34" column="39" selection-start-line="34" selection-start-column="39" selection-end-line="34" selection-end-column="39" />
+        <state relative-caret-position="-1260">
+          <caret line="16" column="55" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="55" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/nn/modules/module.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="369" column="8" selection-start-line="369" selection-start-column="8" selection-end-line="369" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/04 - Convolutional Neural Network/main-gpu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
