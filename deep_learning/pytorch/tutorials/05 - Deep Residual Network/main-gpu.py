@@ -16,12 +16,12 @@ transform = transforms.Compose([
     transforms.ToTensor()])
 
 # CIFAR-10 Dataset
-train_dataset = dsets.CIFAR10(root='../data/',
+train_dataset = dsets.CIFAR10(root='/home/hongbin/dataset',
                                train=True, 
                                transform=transform,
                                download=True)
 
-test_dataset = dsets.CIFAR10(root='../data/',
+test_dataset = dsets.CIFAR10(root='/home/hongbin/dataset',
                               train=False, 
                               transform=transforms.ToTensor())
 
@@ -39,7 +39,7 @@ def conv3x3(in_channels, out_channels, stride=1):
     return nn.Conv2d(in_channels, out_channels, kernel_size=3, 
                      stride=stride, padding=1, bias=False)
 
-# Residual Block
+# Residual Block -- only override the __init__ and forward funcs
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
         super(ResidualBlock, self).__init__()
@@ -72,8 +72,8 @@ class ResNet(nn.Module):
         self.bn = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
         self.layer1 = self.make_layer(block, 16, layers[0])
-        self.layer2 = self.make_layer(block, 32, layers[0], 2)
-        self.layer3 = self.make_layer(block, 64, layers[1], 2)
+        self.layer2 = self.make_layer(block, 32, layers[1], 2)
+        self.layer3 = self.make_layer(block, 64, layers[2], 2)
         self.avg_pool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64, num_classes)
         
@@ -139,9 +139,9 @@ for images, labels in test_loader:
     outputs = resnet(images)
     _, predicted = torch.max(outputs.data, 1)
     total += labels.size(0)
-    correct += (predicted.cpu() == labels).sum()
+    correct += (predicted.cpu() == labels).sum() # take data back to cpu
 
 print('Accuracy of the model on the test images: %d %%' % (100 * correct / total))
 
 # Save the Model
-torch.save(resnet.state_dict(), 'resnet.pkl')
+torch.save(resnet.state_dict(), '/home/hongbin/outputs/resnet.pkl')

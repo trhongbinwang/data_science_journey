@@ -119,4 +119,4 @@ with open(sample_path, 'w') as f:
             print('Sampled [%d/%d] words and save to %s'%(i+1, num_samples, sample_path))
 
 # Save the Trained Model
-torch.save(model.state_dict(), 'model.pkl')
+torch.save(model.state_dict(), '/home/hongbin/outputs/language_model.pkl')
