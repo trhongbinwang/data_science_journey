@@ -84,6 +84,7 @@ for epoch in range(num_epochs):
 correct = 0
 total = 0
 for images, labels in test_loader:
+    # view is reshape
     images = Variable(images.view(-1, sequence_length, input_size)).cuda()
     outputs = rnn(images)
     _, predicted = torch.max(outputs.data, 1)
