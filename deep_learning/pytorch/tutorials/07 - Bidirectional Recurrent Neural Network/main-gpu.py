@@ -16,12 +16,12 @@ num_epochs = 2
 learning_rate = 0.003
 
 # MNIST Dataset
-train_dataset = dsets.MNIST(root='../data/',
+train_dataset = dsets.MNIST(root='/home/hongbin/dataset',
                             train=True, 
                             transform=transforms.ToTensor(),
                             download=True)
 
-test_dataset = dsets.MNIST(root='../data/',
+test_dataset = dsets.MNIST(root='/home/hongbin/dataset',
                            train=False, 
                            transform=transforms.ToTensor())
 
@@ -53,7 +53,7 @@ class BiRNN(nn.Module):
         out, _ = self.lstm(x, (h0, c0))
         
         # Decode hidden state of last time step
-        out = self.fc(out[:, -1, :])
+        out = self.fc(out[:, -1, :]) # ? tensor operation
         return out
 
 rnn = BiRNN(input_size, hidden_size, num_layers, num_classes)
@@ -93,4 +93,4 @@ for images, labels in test_loader:
 print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
 
 # Save the Model
-torch.save(rnn.state_dict(), 'rnn.pkl')
+torch.save(rnn.state_dict(), '/home/hongbin/outputs/rnn.pkl')

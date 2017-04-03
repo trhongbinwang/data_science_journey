@@ -11,12 +11,12 @@ batch_size = 100
 learning_rate = 0.001
 
 # MNIST Dataset
-train_dataset = dsets.MNIST(root='../data/',
+train_dataset = dsets.MNIST(root='/home/hongbin/dataset',
                             train=True, 
                             transform=transforms.ToTensor(),
                             download=True)
 
-test_dataset = dsets.MNIST(root='../data/',
+test_dataset = dsets.MNIST(root='/home/hongbin/dataset',
                            train=False, 
                            transform=transforms.ToTensor())
 
@@ -43,12 +43,12 @@ class CNN(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(2))
-        self.fc = nn.Linear(7*7*32, 10)
+        self.fc = nn.Linear(7*7*32, 10) # how to automatic infer the tensor size
         
     def forward(self, x):
         out = self.layer1(x)
         out = self.layer2(out)
-        out = out.view(out.size(0), -1)
+        out = out.view(out.size(0), -1) # tensor.view means resize.
         out = self.fc(out)
         return out
         
@@ -77,7 +77,7 @@ for epoch in range(num_epochs):
                    %(epoch+1, num_epochs, i+1, len(train_dataset)//batch_size, loss.data[0]))
 
 # Test the Model
-cnn.eval()    # Change model to 'eval' mode (BN uses moving mean/var).
+cnn.eval()    # Change model to 'eval' mode (BN uses moving mean/var). can disable Bn and dropout
 correct = 0
 total = 0
 for images, labels in test_loader:
@@ -90,4 +90,4 @@ for images, labels in test_loader:
 print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total))
 
 # Save the Trained Model
-torch.save(cnn.state_dict(), 'cnn.pkl')
+torch.save(cnn.state_dict(), '/home/hongbin/outputs/cnn.pkl')
