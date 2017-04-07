@@ -23,8 +23,13 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/00 - PyTorch Basics/main.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+            <state relative-caret-position="1656">
+              <caret line="53" column="24" selection-start-line="53" selection-start-column="24" selection-end-line="53" selection-end-column="24" />
+=======
             <state relative-caret-position="763">
               <caret line="66" column="29" selection-start-line="66" selection-start-column="29" selection-end-line="66" selection-end-column="29" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -32,6 +37,13 @@
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/02 - Logistic Regression/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="72">
+              <caret line="2" column="30" selection-start-line="0" selection-start-column="0" selection-end-line="2" selection-end-column="30" />
+=======
       <file leaf-file-name="main-gpu.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/04 - Convolutional Neural Network/main-gpu.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -83,6 +95,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="2400">
               <caret line="79" column="27" selection-start-line="79" selection-start-column="27" selection-end-line="79" selection-end-column="27" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
               <folding />
             </state>
           </provider>
@@ -136,8 +149,11 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< HEAD
+=======
       <pane id="Scope" />
       <pane id="Scratches" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -166,7 +182,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+<<<<<<< HEAD
+              <option name="myItemId" value="02 - Logistic Regression" />
+=======
               <option name="myItemId" value="08 - Language Model" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -180,11 +200,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+<<<<<<< HEAD
+              <option name="myItemId" value="01 - Linear Regression" />
+=======
               <option name="myItemId" value="08 - Language Model" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="data" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -198,12 +222,21 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+<<<<<<< HEAD
+              <option name="myItemId" value="00 - PyTorch Basics" />
+=======
               <option name="myItemId" value="06 - Recurrent Neural Network" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+<<<<<<< HEAD
+      <pane id="Scope" />
+      <pane id="Scratches" />
+=======
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -401,6 +434,10 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/00 - PyTorch Basics/main.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="1656">
+          <caret line="53" column="24" selection-start-line="53" selection-start-column="24" selection-end-line="53" selection-end-column="24" />
+=======
         <state relative-caret-position="1888">
           <caret line="66" column="29" selection-start-line="66" selection-start-column="29" selection-end-line="66" selection-end-column="29" />
           <folding>
@@ -433,6 +470,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="384">
           <caret line="16" column="55" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="55" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
@@ -441,6 +479,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/02 - Logistic Regression/main.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+=======
         <state relative-caret-position="2400">
           <caret line="79" column="27" selection-start-line="79" selection-start-column="27" selection-end-line="79" selection-end-column="27" />
           <folding />
@@ -519,10 +561,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="11552">
           <caret line="369" column="8" selection-start-line="369" selection-start-column="8" selection-end-line="369" selection-end-column="8" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
           <folding />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
+=======
     <entry file="file://$PROJECT_DIR$/03 - Feedforward Neural Network/main-gpu.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="384">
@@ -533,6 +578,7 @@
         </state>
       </provider>
     </entry>
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
     <entry file="file://$PROJECT_DIR$/00 - PyTorch Basics/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -635,6 +681,24 @@
     </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/nn/modules/module.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="1440">
+          <caret line="40" column="8" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/torch/optim/optimizer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="130" column="8" selection-start-line="130" selection-start-column="8" selection-end-line="130" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/01 - Linear Regression/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="45" column="21" selection-start-line="45" selection-start-column="4" selection-end-line="45" selection-end-column="23" />
+=======
         <state relative-caret-position="368">
           <caret line="369" column="8" selection-start-line="369" selection-start-column="8" selection-end-line="369" selection-end-column="8" />
           <folding />
@@ -656,6 +720,7 @@
         <state relative-caret-position="2400">
           <caret line="79" column="27" selection-start-line="79" selection-start-column="27" selection-end-line="79" selection-end-column="27" />
           <folding />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
         </state>
       </provider>
     </entry>
@@ -668,6 +733,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/00 - PyTorch Basics/main.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="1656">
+          <caret line="53" column="24" selection-start-line="53" selection-start-column="24" selection-end-line="53" selection-end-column="24" />
+=======
         <state relative-caret-position="763">
           <caret line="66" column="29" selection-start-line="66" selection-start-column="29" selection-end-line="66" selection-end-column="29" />
           <folding>
@@ -690,12 +759,19 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-832">
           <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/02 - Logistic Regression/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="2" column="30" selection-start-line="0" selection-start-column="0" selection-end-line="2" selection-end-column="30" />
+=======
     <entry file="file://$PROJECT_DIR$/07 - Bidirectional Recurrent Neural Network/main-gpu.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-670">
@@ -738,6 +814,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1979">
           <caret line="121" column="63" selection-start-line="121" selection-start-column="63" selection-end-line="121" selection-end-column="63" />
+>>>>>>> 81277e1613f0efa5c0af670b18163aaf8f13f516
           <folding />
         </state>
       </provider>
