@@ -40,8 +40,10 @@ def conv3x3(in_channels, out_channels, stride=1):
                      stride=stride, padding=1, bias=False)
 
 # Residual Block -- only override the __init__ and forward funcs
+
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
+        # __init__ define the basic layers.
         super(ResidualBlock, self).__init__()
         self.conv1 = conv3x3(in_channels, out_channels, stride)
         self.bn1 = nn.BatchNorm2d(out_channels)
@@ -50,7 +52,7 @@ class ResidualBlock(nn.Module):
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.downsample = downsample
         
-    def forward(self, x):
+    def forward(self, x): # forward func really define the nn structure
         residual = x
         out = self.conv1(x)
         out = self.bn1(out)
