@@ -133,6 +133,14 @@ for epoch in range(num_epochs):
         g_error.backward()
         g_optimizer.step()  # Only optimizes G's parameters
 
+    # adjust the lr in certain steps
+    if (epoch+1)% (num_epochs/3) == 0:
+        print('changing the lr at epoch: %s' % epoch)
+        d_learning_rate /= 2
+        g_learning_rate /= 2
+        d_optimizer = optim.Adam(D.parameters(), lr=d_learning_rate, betas=optim_betas)
+        g_optimizer = optim.Adam(G.parameters(), lr=g_learning_rate, betas=optim_betas)
+
     if epoch % print_interval == 0:
         print("%s: D: %s/%s G: %s (Real: %s, Fake: %s) " % (epoch,
                                                             extract(d_real_error)[0],
@@ -140,3 +148,4 @@ for epoch in range(num_epochs):
                                                             extract(g_error)[0],
                                                             stats(extract(d_real_data)),
                                                             stats(extract(d_fake_data))))
+# the training process diverged sometime
