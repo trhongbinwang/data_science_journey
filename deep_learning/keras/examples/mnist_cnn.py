@@ -6,12 +6,15 @@ Gets to 99.25% test accuracy after 12 epochs
 '''
 
 from __future__ import print_function
+import tensorflow as tf
 import tensorflow.contrib.keras as keras
 from tensorflow.contrib.keras.python.keras.datasets import mnist
 from tensorflow.contrib.keras.python.keras.models import Model
 from tensorflow.contrib.keras.python.keras.layers import Input, Dense, Dropout, Flatten
 from tensorflow.contrib.keras.python.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.contrib.keras.python.keras import backend as K
+from tensorflow.contrib.keras.python.keras.objectives import categorical_crossentropy
+
 
 # add prefix in import line. from tensorflow.contrib.keras.python.
 
@@ -53,9 +56,33 @@ def load_data():
     return [x_train, y_train, x_test, y_test]
 
 
+def inputs_placeholder():
+    '''
+    '''
+    img = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
+    labels = tf.placeholder(tf.float32, shape=(None, 10))
+    return [img, labels]
+
+
+def cnn_model_tf(img, labels):
+    '''
+    defin the model in tf way
+
+    '''
+    x = Conv2D(32, kernel_size=(3, 3), activation='relu')(inputs)
+    x = Conv2D(64, (3, 3), activation='relu')(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Dropout(0.25)(x)
+    x = Flatten()(x)
+    x = Dense(128, activation='relu')(x)
+    x = Dropout(0.5)(x)
+    pred = Dense(num_classes, activation='softmax')(x)
+    loss = tf.reduce_mean(categorical_crossentropy(labels, pred))
+
+
 def cnn_model_fn():
     '''
-    define the model function way
+    define the model in function way
 
     '''
     # input shape is (img_rows, img_cols, fea_channel)
@@ -90,10 +117,27 @@ def train(data, model):
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
 
+
+def main_tf():
+    '''
+    main func in tf way
+    '''
+    # initialiaze tf session
+    sess = tf.Session()
+    K.set_session(sess)  # register tf session with keras
+
+
+def main_fn():
+    '''
+    main func in function way
+    '''
+
+    data = load_data()
+    model = cnn_model_fn()
+    train(data, model)
+
 if __name__ == '__main__':
     '''
 
     '''
-    data = load_data()
-    model = cnn_model_fn()
-    train(data, model)
+    main_fn()

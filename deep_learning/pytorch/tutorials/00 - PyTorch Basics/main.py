@@ -151,7 +151,7 @@ train_loader = torch.utils.data.DataLoader(dataset=custom_dataset,
 # Download and load pretrained resnet.
 resnet = torchvision.models.resnet18(pretrained=True)
 
-# If you want to finetune only top layer of the model.
+# If you want to fine tune only top layer of the model.
 for param in resnet.parameters():
     param.requires_grad = False
     
