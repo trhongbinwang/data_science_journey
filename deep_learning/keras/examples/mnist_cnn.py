@@ -70,7 +70,7 @@ def cnn_model_tf(inputs):
     defin the model in tf way
 
     '''
-    img, labels, keep_rate = inputs[0], inputs[1], input[2]
+    img, labels, keep_rate = inputs[0], inputs[1], inputs[2]
     x = Conv2D(32, kernel_size=(3, 3), activation='relu')(img)
     x = Conv2D(64, (3, 3), activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
@@ -134,7 +134,7 @@ def train_tf(sess, data, inputs, model):
 
     '''
     x_train, y_train, x_test, y_test = data[0], data[1], data[2], data[3]
-    img, labels, keep_rate = inputs[0], inputs[1], input[2]
+    img, labels, keep_rate = inputs[0], inputs[1], inputs[2]
     train_op, accuracy = model[0], model[1]
 
     for epoch_i in range(epochs):
@@ -161,17 +161,18 @@ def main_tf():
     main func in tf way
     '''
     # initialiaze tf session
-    sess = tf.Session()
-    K.set_session(sess)  # register tf session with keras
+#    sess = tf.Session()
+#    K.set_session(sess)  # register tf session with keras
     # load data
     data = load_data()
     # define inputs
     inputs = inputs_placeholder()
     # define model
     model = cnn_model_tf(inputs)
-    # train
-    sess.run(tf.global_variables_initializer())
-    train_tf(sess, data, inputs, model)
+    with tf.Session() as sess:
+        # train
+        sess.run(tf.global_variables_initializer())
+        train_tf(sess, data, inputs, model)
 
 
 def main_fn():

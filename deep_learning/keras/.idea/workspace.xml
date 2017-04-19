@@ -23,8 +23,8 @@
       <file leaf-file-name="mnist_cnn.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/mnist_cnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="548">
-              <caret line="148" column="60" selection-start-line="148" selection-start-column="60" selection-end-line="148" selection-end-column="60" />
+            <state relative-caret-position="3176">
+              <caret line="164" column="1" selection-start-line="164" selection-start-column="1" selection-end-line="164" selection-end-column="1" />
               <folding>
                 <element signature="e#0#194#1" expanded="false" />
               </folding>
@@ -520,8 +520,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/mnist_cnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="548">
-          <caret line="148" column="60" selection-start-line="148" selection-start-column="60" selection-end-line="148" selection-end-column="60" />
+        <state relative-caret-position="3176">
+          <caret line="164" column="1" selection-start-line="164" selection-start-column="1" selection-end-line="164" selection-end-column="1" />
           <folding>
             <element signature="e#0#194#1" expanded="false" />
           </folding>
