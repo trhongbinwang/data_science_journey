@@ -21,7 +21,7 @@ from keras.metrics import categorical_accuracy as accuracy # iy just a function
 
 # initialiaze tf session
 sess = tf.Session()
-K.set_session(sess) # register tf session with keras
+K.set_session(sess) # no need. directly use with tf.Session() as sess:
 
 # this placeholder will contain our input digits, as flat vectors
 img = tf.placeholder(tf.float32, shape=(None, 784))
