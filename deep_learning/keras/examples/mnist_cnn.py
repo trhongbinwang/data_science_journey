@@ -15,6 +15,7 @@ from tensorflow.contrib.keras.python.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.contrib.keras.python.keras import backend as K
 from tensorflow.contrib.keras.python.keras.losses import categorical_crossentropy
 
+# keras metric just wrapper of tf operators.
 
 # add prefix in import line. from tensorflow.contrib.keras.python.
 
@@ -75,7 +76,7 @@ def cnn_model_tf(inputs):
     x = Conv2D(64, (3, 3), activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
     #x = Dropout(0.25)(x)
-    # mix with tf operator
+    # mix with tf operator. ok.
     x = tf.nn.dropout(x, keep_rate)
     x = Flatten()(x)
     x = Dense(128, activation='relu')(x)
@@ -131,7 +132,7 @@ def train(data, model):
 
 def train_tf(sess, data, inputs, model):
     '''
-
+    the way the tf do training is a little bit stupid.
     '''
     x_train, y_train, x_test, y_test = data[0], data[1], data[2], data[3]
     img, labels, keep_rate = inputs[0], inputs[1], inputs[2]

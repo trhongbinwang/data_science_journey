@@ -20,11 +20,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
-      <file leaf-file-name="mnist_cnn.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="mnist_cnn.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/mnist_cnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="800">
-              <caret line="150" column="32" selection-start-line="150" selection-start-column="32" selection-end-line="150" selection-end-column="32" />
+            <state relative-caret-position="720">
+              <caret line="121" column="73" selection-start-line="121" selection-start-column="4" selection-end-line="121" selection-end-column="73" />
               <folding>
                 <element signature="e#0#194#1" expanded="false" />
                 <element signature="e#196#233#0" expanded="true" />
@@ -33,21 +33,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/layers/core.py">
+      <file leaf-file-name="imdb_cnn.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/examples/imdb_cnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10778">
-              <caret line="466" column="6" selection-start-line="466" selection-start-column="6" selection-end-line="466" selection-end-column="6" />
-              <folding />
+            <state relative-caret-position="2664">
+              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+              <folding>
+                <element signature="e#191#228#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="backend.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/backend.py">
+      <file leaf-file-name="pooling.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/layers/pooling.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="518">
-              <caret line="357" column="4" selection-start-line="357" selection-start-column="4" selection-end-line="357" selection-end-column="4" />
+            <state relative-caret-position="302">
+              <caret line="496" column="6" selection-start-line="496" selection-start-column="6" selection-end-line="496" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -56,7 +58,7 @@
       <file leaf-file-name="keras_as_tf_api.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/keras_as_tf_api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-396">
+            <state relative-caret-position="360">
               <caret line="19" column="58" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="58" />
               <folding />
             </state>
@@ -66,7 +68,7 @@
       <file leaf-file-name="keras_function_api.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/keras_function_api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4788">
+            <state relative-caret-position="-3478">
               <caret line="133" column="30" selection-start-line="133" selection-start-column="25" selection-end-line="133" selection-end-column="30" />
               <folding>
                 <element signature="e#491#528#0" expanded="true" />
@@ -81,6 +83,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/examples/mnist_cnn.py" />
+        <option value="$PROJECT_DIR$/examples/imdb_cnn.py" />
       </list>
     </option>
   </component>
@@ -338,7 +341,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90828">
           <caret line="2558" column="4" selection-start-line="2558" selection-start-column="4" selection-end-line="2558" selection-end-column="4" />
-          <folding />
+          <folding>
+            <element signature="e#825#863#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -449,14 +454,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/engine/topology.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="1388" column="6" selection-start-line="1388" selection-start-column="6" selection-end-line="1388" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/engine/training.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
@@ -478,21 +475,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/keras_function_api.py">
+    <entry file="file://$PROJECT_DIR$/keras_as_tf_api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4788">
-          <caret line="133" column="30" selection-start-line="133" selection-start-column="25" selection-end-line="133" selection-end-column="30" />
-          <folding>
-            <element signature="e#491#528#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="360">
+          <caret line="19" column="58" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/engine/topology.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8294">
+          <caret line="1312" column="4" selection-start-line="1312" selection-start-column="4" selection-end-line="1312" selection-end-column="4" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/backend.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="518">
-          <caret line="357" column="4" selection-start-line="357" selection-start-column="4" selection-end-line="357" selection-end-column="4" />
-          <folding />
+        <state relative-caret-position="-5098">
+          <caret line="971" column="4" selection-start-line="971" selection-start-column="4" selection-end-line="971" selection-end-column="4" />
+          <folding>
+            <element signature="e#825#863#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -504,21 +509,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/keras_as_tf_api.py">
+    <entry file="file://$PROJECT_DIR$/keras_function_api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-396">
-          <caret line="19" column="58" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="58" />
+        <state relative-caret-position="-3478">
+          <caret line="133" column="30" selection-start-line="133" selection-start-column="25" selection-end-line="133" selection-end-column="30" />
+          <folding>
+            <element signature="e#491#528#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.5/site-packages/tensorflow/contrib/keras/python/keras/layers/pooling.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="496" column="6" selection-start-line="496" selection-start-column="6" selection-end-line="496" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/mnist_cnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="800">
-          <caret line="150" column="32" selection-start-line="150" selection-start-column="32" selection-end-line="150" selection-end-column="32" />
+        <state relative-caret-position="720">
+          <caret line="121" column="73" selection-start-line="121" selection-start-column="4" selection-end-line="121" selection-end-column="73" />
           <folding>
             <element signature="e#0#194#1" expanded="false" />
             <element signature="e#196#233#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/imdb_cnn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2664">
+          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+          <folding>
+            <element signature="e#191#228#0" expanded="true" />
           </folding>
         </state>
       </provider>
