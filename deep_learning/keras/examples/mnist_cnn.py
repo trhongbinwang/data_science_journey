@@ -61,7 +61,8 @@ def inputs_placeholder():
     '''
     img = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     labels = tf.placeholder(tf.float32, shape=(None, 10))
-    return [img, labels]
+    keep_rate = tf.placeholder(tf.float32)
+    return [img, labels, keep_rate]
 
 
 def cnn_model_tf(inputs):
@@ -69,14 +70,17 @@ def cnn_model_tf(inputs):
     defin the model in tf way
 
     '''
-    img, labels = inputs[0], inputs[1]
+    img, labels, keep_rate = inputs[0], inputs[1], input[2]
     x = Conv2D(32, kernel_size=(3, 3), activation='relu')(img)
     x = Conv2D(64, (3, 3), activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
     #x = Dropout(0.25)(x)
+    # mix with tf operator
+    x = tf.nn.dropout(x, keep_rate)
     x = Flatten()(x)
     x = Dense(128, activation='relu')(x)
     #x = Dropout(0.5)(x)
+    x = tf.nn.dropout(x, keep_rate)
     pred = Dense(num_classes, activation='softmax')(x)
     loss = tf.reduce_mean(categorical_crossentropy(labels, pred))
     # train
@@ -130,7 +134,7 @@ def train_tf(sess, data, inputs, model):
 
     '''
     x_train, y_train, x_test, y_test = data[0], data[1], data[2], data[3]
-    img, labels = inputs[0], inputs[1]
+    img, labels, keep_rate = inputs[0], inputs[1], input[2]
     train_op, accuracy = model[0], model[1]
 
     for epoch_i in range(epochs):
@@ -140,11 +144,15 @@ def train_tf(sess, data, inputs, model):
             training_batch = zip(range(0, len(x_train), batch_size),
                                  range(batch_size, len(x_train) + 1, batch_size))
             for start, end in training_batch:
-                sess.run(train_op, feed_dict={img: x_train[start:end], labels: y_train[start:end]})
+                sess.run(train_op, feed_dict={img: x_train[start:end],
+                                              labels: y_train[start:end],
+                                              keep_rate: 0.5
+                                              })
             print(sess.run(accuracy,
                            feed_dict={
                                img: x_test[:100],
                                labels: y_test[:100],
+                               keep_rate: 1.0
                            }))
 
 
