@@ -148,12 +148,12 @@ def train_tf(sess, data, inputs, model):
                                               labels: y_train[start:end],
                                               keep_rate: 0.5
                                               })
-            print(sess.run(accuracy,
-                           feed_dict={
-                               img: x_test[:100],
-                               labels: y_test[:100],
-                               keep_rate: 1.0
-                           }))
+        print(sess.run(accuracy,
+                       feed_dict={
+                           img: x_test,
+                           labels: y_test,
+                           keep_rate: 1.0
+                       }))
 
 
 def main_tf():
